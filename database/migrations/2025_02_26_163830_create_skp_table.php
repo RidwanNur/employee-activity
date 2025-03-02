@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('month');
             $table->date('year');
             $table->integer('total_working_day');
+            $table->integer('is_deleted');
             $table->timestamps();
 
             $table->foreign('employee_id')

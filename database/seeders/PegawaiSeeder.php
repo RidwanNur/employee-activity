@@ -23,10 +23,11 @@ class PegawaiSeeder extends Seeder
     		$user = DB::table('employees')->insert([
     			'name' => $faker->name,
     			'nip' => $faker->numberBetween(10000,15000),
+    			'position' => $faker->jobTitle,
     			'address' => $faker->city(),
     			'created_at' => $faker->dateTime()
     		]);
-            // $user->assignRole('pegawai');
+            // $user->assignRole('admin');
     	}
     }
 }

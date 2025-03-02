@@ -14,15 +14,13 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
 
-            // Relasi opsional ke tabel users, jika pegawai ini punya akun
             $table->unsignedBigInteger('user_id')->nullable();
             
-            $table->string('nip')->unique();
+            $table->string('nip');
+            $table->string('position');
             $table->string('name');
             $table->string('address');
-
-            // Relasi ke tabel work_regions
-            $table->unsignedBigInteger('region_id')->nullable();
+            $table->string('region');
 
             $table->timestamps();
 
@@ -32,11 +30,6 @@ return new class extends Migration
                   ->on('users')
                   ->onDelete('set null'); 
                   // set null jika user dihapus, agar data pegawai tetap ada
-
-            $table->foreign('region_id')
-                  ->references('id')
-                  ->on('work_regions')
-                  ->onDelete('cascade');
         });
         
     }

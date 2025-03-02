@@ -7,12 +7,17 @@ use App\Models\User;
 use App\Models\Employees;
 use App\Models\Work_Region;
 use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Validator;
 
 
 class AdminController extends Controller
 {
     public function index () {
+        // $user = auth()->user()->name;
+        // return $user->getRoleNames();
+        $users = User::with('roles')->get();;
+        return $users;
         $employees = Employees::whereNull('is_deleted')->get();
         $workRegion = Work_Region::all();
         return view('admin.dashboard', compact('employees', 'workRegion'));   
@@ -102,7 +107,7 @@ class AdminController extends Controller
 
 
     public function settingSkp(){
-
+        
     }
 
     public function getReportActivity(){

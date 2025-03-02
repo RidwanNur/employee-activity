@@ -18,16 +18,17 @@ return new class extends Migration
             $table->unsignedBigInteger('role_id');
             
             $table->string('username')->unique();
-            $table->string('email')->unique();
+            $table->string('nip')->unique();
             $table->string('password');
+            $table->string('status');
             
             $table->timestamps();
 
             // Definisikan foreign key
-            $table->foreign('role_id')
-                  ->references('id')
-                  ->on('roles')
-                  ->onDelete('cascade');
+            // $table->foreign('role_id')
+            //       ->references('id')
+            //       ->on('roles')
+            //       ->onDelete('cascade');
         });
 
         

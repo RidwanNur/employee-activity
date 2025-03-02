@@ -21,11 +21,11 @@ class UserSeeder extends Seeder
  
     	      // insert data ke table pegawai menggunakan Faker
     		$user = User::create([
-    			'name' => $faker->name,
-    			'email' => $faker->email(),
+    			'username' => $faker->name,
+    			'nip' => $faker->numberBetween(10000,15000),
     			'password' => Hash::make('123456')
     		]);
-            $user->assignRole('pegawai');
+            $user->assignRole('admin');
     	}
     }
     
