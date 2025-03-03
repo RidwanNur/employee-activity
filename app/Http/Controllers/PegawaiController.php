@@ -191,8 +191,9 @@ class PegawaiController extends Controller
             return response()->json($validator->errors(), 422);
         }
         
-
-       $activities =  Activities::create([
+        $activities = Activities::findOrFail($id);
+        
+       $activities->update([
             'skp_id' => $request->skp_id,
             'activity' => $request->activity,
             'description' => $request->description,

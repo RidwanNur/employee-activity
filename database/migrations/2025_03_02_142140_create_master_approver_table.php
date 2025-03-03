@@ -11,14 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('atasan_bawahan', function (Blueprint $table) {
+        Schema::create('master_approver', function (Blueprint $table) {
             $table->id();
-            $table->string('activity_id');
-            $table->string('master_approver_id');
+            $table->string('employee_atasan_id');
             $table->string('nip_atasan');
             $table->string('nama_atasan');
+            $table->string('position_atasan');
+            $table->string('employee_id');
             $table->string('nama');
             $table->string('nip');
+            $table->string('position');
+            $table->integer('is_active')->default(1);
+            $table->integer('is_deleted');
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('atasan_bawahan');
+        Schema::dropIfExists('master_approver');
     }
 };

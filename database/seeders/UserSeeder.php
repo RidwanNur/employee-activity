@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
     			'nip' => $faker->numberBetween(10000,15000),
     			'password' => Hash::make('123456')
     		]);
-            $user->assignRole('admin');
+            $user->assignRole('atasan');
     	}
     }
     

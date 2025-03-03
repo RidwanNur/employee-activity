@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AtasanController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,12 @@ Route::middleware('auth','verified')->group(function () {
 Route::middleware('auth','verified')->group(function () {
     Route::middleware(['role:pegawai'])->group(function () {
     Route::get('/dashboard/pegawai', [PegawaiController::class, 'index'])->name('pegawai.dashboard');
+});
+});
+
+Route::middleware('auth','verified')->group(function () {
+    Route::middleware(['role:atasan'])->group(function () {
+    Route::get('/dashboard/atasan', [AtasanController::class, 'index'])->name('atasan.dashboard');
 });
 });
 

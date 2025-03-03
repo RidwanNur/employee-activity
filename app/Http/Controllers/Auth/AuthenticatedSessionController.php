@@ -51,9 +51,12 @@ class AuthenticatedSessionController extends Controller
                     } elseif ($user->hasRole('pegawai')) {
                         Auth::login($user);
                         return redirect()->route('pegawai.dashboard');
-                    } 
+                    } elseif ($user->hasRole('atasan')) {
+                        Auth::login($user);
+                        return redirect()->route('atasan.dashboard');
+                    }
                 }
-                // return $user;
+                Auth::logout();
                 return redirect('/')->with('status', 'Status anda tidak aktif');
             }
         }
