@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('employee_id')->nullable();
             $table->unsignedBigInteger('skp_id');
+            $table->string('nip_atasn')->value(10);
             $table->string('activity');
             $table->text('description')->nullable();
             

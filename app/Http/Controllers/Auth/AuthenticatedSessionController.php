@@ -41,20 +41,18 @@ class AuthenticatedSessionController extends Controller
         $user = User::where('nip', $request->nip)->first();
 
         if ($user) {
-
-
             if (Hash::check($request->password, $user->password)) {
                 if ($user->status == 1) {
                     if ($user->hasRole('admin')) {
                         Auth::login($user);
                         return redirect()->route('dashboard');
+                    } elseif ($user->hasRole('atasan') && $user->is_atasan == 1) {
+                        Auth::login($user);
+                        return redirect()->route('atasan.dashboard');
                     } elseif ($user->hasRole('pegawai')) {
                         Auth::login($user);
                         return redirect()->route('pegawai.dashboard');
-                    } elseif ($user->hasRole('atasan')) {
-                        Auth::login($user);
-                        return redirect()->route('atasan.dashboard');
-                    }
+                    } 
                 }
                 Auth::logout();
                 return redirect('/')->with('status', 'Status anda tidak aktif');

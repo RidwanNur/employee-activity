@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('address');
             $table->string('region');
+            $table->string('nip_atasan');
+            $table->string('nama_atasan');
 
             $table->timestamps();
 

@@ -20,15 +20,15 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('employees', 'workRegion'));   
     }
 
-
-
     public function storeEmployee (Request $request){
         
         $validator = Validator::make($request->all(), [
             'nip' => 'required|numeric',
             'name' => 'required',
             'region' => 'required',
-            'position' => 'required'
+            'position' => 'required',
+            'nip_atasan' => 'nip_atasan',
+            'nama_atasan' => 'nama_atasan'
         ]);
 
         if ($validator->fails()) {
@@ -44,11 +44,14 @@ class AdminController extends Controller
             ], 409);
         }
 
+
        $employee =  Employees::create([
             'nip' => $request->nip,
             'name' => $request->name,
             'region' => $request->region,
             'position' => $request->position,
+            'nip_atasan' => $request->nip_atasan,
+            'nama_atasan' => $request->nama_atasan,
             'created_at' => Carbon::now,
         ]);
 
@@ -58,6 +61,15 @@ class AdminController extends Controller
             'password' => Hash::make('123456')
         ]);
         $user->assignRole('pegawai');
+
+        $atasan = User::where('nip', $request->nip_atasan)->first();
+        if($atasan->hasRole('pegawai')){
+            $atasan->syncRoles(['atasan']);
+            $atasan->update([
+                'is_atasan' => 1,
+                'updated_at' => Carbon::now,
+            ]);
+        }
 
         return redirect()->back()->with(['message' => 'Record inserted successfully.', 'data' => $employee]);
 
@@ -72,14 +84,20 @@ class AdminController extends Controller
         return redirect()->back()->with(['message' => 'Record deleted successfully.', 'data' => $employee]);
     }  
 
-    public function editEmployee(Request $request, $id){
+    public function updateEmployee(Request $request, $id){
 
         $validator = Validator::make($request->all(), [
             'nip' => 'required|numeric',
             'name' => 'required',
             'region' => 'required',
+            'nip_atasan' => 'nip_atasan',
+            'nama_atasan' => 'nama_atasan',
             'position' => 'required'
         ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
 
         $employee = Employees::findOrFail($id);
 
@@ -88,6 +106,8 @@ class AdminController extends Controller
             'name' => $request->name,
             'region' => $request->region,
             'position' => $request->position,
+            'nip_atasan' => $request->nip_atasan,
+            'nama_atasan' => $request->nama_atasan,
             'created_at' => Carbon::now,
         ]);
 
@@ -97,8 +117,21 @@ class AdminController extends Controller
             'nip' => $request->nip,
         ]);
 
+        $atasan = User::where('nip', $request->nip_atasan)->first();
+        if($atasan->hasRole('pegawai')){
+            $atasan->syncRoles(['atasan']);
+            $atasan->update([
+                'is_atasan' => 1,
+                'updated_at' => Carbon::now,
+            ]);
+        }
+
         return redirect()->back()->with(['message' => 'Record updated successfully.', 'data' => $employee]);
 
+    }
+
+    public function recapActivity(){
+        
     }
 
 

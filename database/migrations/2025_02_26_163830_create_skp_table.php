@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name_skp');
             $table->date('month');
             $table->date('year');
-            $table->integer('total_working_day');
+            $table->integer('total_working_day')->nullable();
             $table->integer('is_deleted');
             $table->timestamps();
 

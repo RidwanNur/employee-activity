@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('nip')->unique();
             $table->string('password');
             $table->string('status');
+            $table->string('is_atasan');
             
             $table->timestamps();
 

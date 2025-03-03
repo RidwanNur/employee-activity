@@ -24,7 +24,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
-        'status'
+        'status',
+        'is_atasan'
     ];
 
     /**
@@ -50,9 +51,6 @@ class User extends Authenticatable
         ];
     }
 
-    public function role(){
-        return $this->hasOne(Role::class);
-    }
 
     public function employee(){
         return $this->hasOne(Role::class);

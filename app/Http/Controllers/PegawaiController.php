@@ -24,7 +24,6 @@ class PegawaiController extends Controller
             'name_skp' => 'required',
             'month' => 'required',
             'year' => 'required',
-            'total_working_day' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
@@ -46,20 +45,12 @@ class PegawaiController extends Controller
             ], 409);
         }
 
-        if($request->total_working_day > 28){
-            return redirect()->back()->with([
-                'code' => 409,
-                'status' => 'Error',
-                'message' => 'Hari kerja melebihi ketentuan!'
-            ], 409);
-        }
 
        $skp =  SKP::create([
             'employee_id' => $employee->id,
             'name_skp' => $request->name_skp,
             'month' => $request->month,
             'year' => $request->year,
-            'total_working_day' => $request->total_working_day,
             'created_at' => Carbon::now
         ]);
 
@@ -75,7 +66,6 @@ class PegawaiController extends Controller
             'name_skp' => 'required',
             'month' => 'required',
             'year' => 'required',
-            'total_working_day' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
@@ -97,7 +87,6 @@ class PegawaiController extends Controller
             'name_skp' => $request->name_skp,
             'month' => $request->month,
             'year' => $request->year,
-            'total_working_day' => $request->total_working_day,
             'updated_at' => Carbon::now
         ]);
 
@@ -105,6 +94,15 @@ class PegawaiController extends Controller
         return redirect()->back()->with(['message' => 'Record updated successfully.', 'data' => $skp]);
 
     }
+
+    public function softDeleteSKP($id){
+        $skp = SKP::findOrFail($id);
+        $skp->update([
+            'is_deleted' => 1,
+        ]);
+
+        return redirect()->back()->with(['message' => 'Record deleted successfully.', 'data' => $skp]);
+    }  
 
 
     public function listActivity(){
@@ -192,7 +190,7 @@ class PegawaiController extends Controller
         }
         
         $activities = Activities::findOrFail($id);
-        
+
        $activities->update([
             'skp_id' => $request->skp_id,
             'activity' => $request->activity,
@@ -206,6 +204,20 @@ class PegawaiController extends Controller
 
 
         return redirect()->back()->with(['message' => 'Record inserted successfully.', 'data' => $activities]);
+
+    }
+
+    public function filterActivity(){
+
+    }
+
+    
+    public function filterSKP(){
+
+    }
+
+
+    public function recapActivity(){
 
     }
 
