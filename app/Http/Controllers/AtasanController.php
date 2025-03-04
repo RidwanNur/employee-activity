@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 use Illuminate\Http\Request;
 
 class AtasanController extends Controller
@@ -28,6 +30,8 @@ class AtasanController extends Controller
 
     public function listSKP(){
         return view('pegawai/dashboard');
+
+        $excel = new Spreadsheet;
     }
 
     
@@ -120,6 +124,8 @@ class AtasanController extends Controller
 
     public function listActivity(){
         return view('pegawai/dashboard');
+
+        $excel = new Spreadsheet;
     }
 
     
