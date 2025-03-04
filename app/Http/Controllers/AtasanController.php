@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 use Illuminate\Http\Request;
 
 class AtasanController extends Controller
 {
     public function index (){
-        return view('atasan.dashboard');
+        return view('dashboard');
     }
 
     public function listApproval(){
@@ -27,7 +29,9 @@ class AtasanController extends Controller
     }
 
     public function listSKP(){
-        return view('pegawai/dashboard');
+        return view('pegawai/skp');
+
+        
     }
 
     
@@ -119,7 +123,7 @@ class AtasanController extends Controller
 
 
     public function listActivity(){
-        return view('pegawai/dashboard');
+        return view('pegawai/activity');
     }
 
     

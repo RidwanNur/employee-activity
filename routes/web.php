@@ -22,6 +22,7 @@ Route::get('/', function () {
 Route::middleware('auth','verified')->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::post('/pegawai', [AdminController::class, 'listEmployee'])->name('admin.listEmployee');
     Route::post('/pegawai/create', [AdminController::class, 'storeEmployee'])->name('admin.storeEmployee');
     Route::post('/pegawai/update/{id}', [AdminController::class, 'updateEmployee'])->name('admin.updateEmployee');
     Route::post('/pegawai/delete/{id}', [AdminController::class, 'softDeleteEmployee'])->name('admin.softDeleteEmployee');
@@ -54,10 +55,10 @@ Route::middleware('auth','verified')->group(function () {
     Route::get('/approval/view', [AtasanController::class, 'viewOneActivity'])->name('atasan.viewOneActivity');
     Route::post('/approval/approve', [AtasanController::class, 'ApproveActivity'])->name('atasan.ApproveActivity');
     Route::get('/aktivitas', [AtasanController::class, 'listActivity'])->name('atasan.listActivity');
-    Route::get('/aktivitas', [AtasanController::class, 'listActivity'])->name('atasan.listActivity');
     Route::post('/aktivitas/create', [AtasanController::class, 'storeActivity'])->name('atasan.storeActivity');
     Route::post('/aktivitas/update/{id}', [AtasanController::class, 'updateActivity'])->name('atasan.updateActivity');
     Route::get('/aktivitas-filter', [AtasanController::class, 'storeActivity'])->name('atasan.filterActivity');
+    Route::get('/skp', [AtasanController::class, 'listSKP'])->name('atasan.listSKP');
     Route::post('/skp/create', [AtasanController::class, 'storeSKP'])->name('atasan.storeSKP');
     Route::post('/skp/update/{id}', [AtasanController::class, 'updateSKP'])->name('atasan.updateSKP');
     Route::post('/skp/delete/{id}', [AtasanController::class, 'softDeleteSKP'])->name('atasan.softDeleteSKP');
@@ -72,5 +73,9 @@ Route::middleware('auth','verified')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
+// Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+//         ->name('logout');
 
 require __DIR__.'/auth.php';
