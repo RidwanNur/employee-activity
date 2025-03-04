@@ -17,7 +17,14 @@ class AdminController extends Controller
     public function index () {
         $employees = Employees::whereNull('is_deleted')->get();
         $workRegion = Work_Region::all();
-        return view('admin.dashboard', compact('employees', 'workRegion'));   
+        return view('dashboard', compact('employees', 'workRegion'));   
+    }
+
+    public function listEmployee (){
+            $employees = Employees::whereNull('is_deleted')->get();
+            $workRegion = Work_Region::all();
+            return view('', compact('employees', 'workRegion'));   
+        
     }
 
     public function storeEmployee (Request $request){
