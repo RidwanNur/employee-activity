@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('nip_atasn')->value(10);
             $table->string('activity');
             $table->text('description')->nullable();
+            $table->integer('status')->nullable();
             
             // Siapa yang membuat / mencatat aktivitas ini
             $table->unsignedBigInteger('created_by');
