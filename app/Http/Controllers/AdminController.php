@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Approver;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Approver;
 use App\Models\Employees;
 use App\Models\Work_Region;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,9 +16,18 @@ use Illuminate\Support\Facades\Validator;
 class AdminController extends Controller
 {
     public function index () {
-        $employees = Employees::whereNull('is_deleted')->get();
-        $workRegion = Work_Region::all();
-        return view('dashboard', compact('employees', 'workRegion'));   
+        $employee = "SELECT COUNT(*) AS TOTAL FROM EMPLOYEES";
+        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE STATUS IS NOT NULL";
+        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE STATUS IS NULL";
+        $query_last_activity = "SELECT ACTIVITIES.CREATED_AT AS TANGGAL, EMPLOYEES.NIP, ACTIVITIES.CREATED_NAME AS NAMA_PEGAWAI, ACTIVITIES.ACTIVITY, ACTIVITIES.DESCRIPTION FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID ORDER BY ACTIVITIES.CREATED_AT DESC LIMIT 5";
+
+
+        $total_employee = DB::select($employee);
+        $total_activity_appr = DB::select($query_activities_approve);
+        $total_activity_delay = DB::select($query_activities_delay);
+        $last_activity = DB::select($query_last_activity);
+
+        return view('dashboard', compact('total_employee','last_activity','total_activity_appr','total_activity_delay'));
     }
 
     public function listEmployee (){

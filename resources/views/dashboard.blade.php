@@ -22,8 +22,14 @@
             </div>
             <div class="col col-stats ms-3 ms-sm-0">
               <div class="numbers">
-                <p class="card-category">Pegawai</p>
-                <h4 class="card-title">831</h4>
+                @role('atasan')
+                <p class="card-category">Bawahan</p>
+                <h4 class="card-title">{{ $bawahan[0]->TOTAL ?? 0  }}</h4>
+                @endrole
+                @role('admin')
+                <p class="card-category">Total Pegawai</p>
+                <h4 class="card-title">{{ $total_employee[0]->TOTAL ?? 0  }}</h4>
+                @endrole
               </div>
             </div>
           </div>
@@ -42,8 +48,18 @@
             </div>
             <div class="col col-stats ms-3 ms-sm-0">
               <div class="numbers">
-                <p class="card-category">Pekerjaan</p>
-                <h4 class="card-title">100</h4>
+                @role('pegawai')
+                <p class="card-category">Aktivitas</p>
+                <h4 class="card-title">{{ $get_activities[0]->TOTAL ?? 0  }}</h4>
+                @endrole
+                @role('atasan')
+                <p class="card-category">Aktivitas</p>
+                <h4 class="card-title">{{ $atasan_activity[0]->TOTAL ?? 0  }}</h4>
+                @endrole
+                @role('admin')
+                <p class="card-category">Aktivitas Disetujui</p>
+                <h4 class="card-title">{{ $total_activity_appr[0]->TOTAL ?? 0  }}</h4>
+                @endrole
               </div>
             </div>
           </div>
@@ -61,8 +77,18 @@
             </div>
             <div class="col col-stats ms-3 ms-sm-0">
               <div class="numbers">
-                <p class="card-category">lorem</p>
-                <h4 class="card-title">000</h4>
+                @role('pegawai')
+                <p class="card-category">Aktivitas Sudah Disetujui</p>
+                <h4 class="card-title">{{ $get_activities_approve[0]->TOTAL ?? 0  }}</h4>
+                @endrole
+                @role('atasan')
+                <p class="card-category">Aktivitas Sudah Disetujui</p>
+                <h4 class="card-title">{{ $atasan_activity_approve[0]->TOTAL ?? 0  }}</h4>
+                @endrole
+                @role('admin')
+                <p class="card-category">Aktivitas Belum Disetujui</p>
+                <h4 class="card-title">{{ $total_activity_delay[0]->TOTAL ?? 0  }}</h4>
+                @endrole
               </div>
             </div>
           </div>
@@ -80,8 +106,14 @@
             </div>
             <div class="col col-stats ms-3 ms-sm-0">
               <div class="numbers">
-                <p class="card-category">lorem</p>
-                <h4 class="card-title">0000</h4>
+                @role('pegawai')
+                <p class="card-category">Aktivitas Belum Disetujui</p>
+                <h4 class="card-title">{{ $get_activities_delay[0]->TOTAL ?? 0 }}</h4>
+                @endrole
+                @role('atasan')
+                <p class="card-category">Aktivitas Belum Disetujui</p>
+                <h4 class="card-title">{{ $atasan_activity_delay[0]->TOTAL ?? 0 }}</h4>
+                @endrole
               </div>
             </div>
           </div>
@@ -90,116 +122,35 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card card-round">
-        <div class="card-header">
-          <div class="card-head-row">
-            <div class="card-title">Statistik Pekerjaan</div>
-            <div class="card-tools">
-              <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
-                <span class="btn-label">
-                  <i class="fa fa-pencil"></i>
-                </span>
-                Export
-              </a>
-              <a href="#" class="btn btn-label-info btn-round btn-sm">
-                <span class="btn-label">
-                  <i class="fa fa-print"></i>
-                </span>
-                Print
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="chart-container" style="min-height: 375px">
-            <canvas id="statisticsChart"></canvas>
-          </div>
-          <div id="myChartLegend"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  @role('admin')
+  <div class="table-responsive">
+    <table id="add-row" class="display table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Tanggal</th>
+          <th>NIP</th>
+          <th>Nama Pegawai</th>
+          <th>Aktivitas</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
 
-  <div class="col-md-12">
-    <div class="card card-round">
-      <div class="card-header">
-        <div class="card-head-row card-tools-still-right">
-          <div class="card-title">Riwayat Pekerjaan</div>
-          <div class="card-tools">
-            <div class="dropdown">
-              <button class="btn btn-icon btn-clean me-0" type="button" id="dropdownMenuButton"
-                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-ellipsis-h"></i>
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <a class="dropdown-item" href="#">Something else here</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <!-- Projects table -->
-          <table class="table align-items-center mb-0">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col">No Pekerjaan</th>
-                <th scope="col" class="text-end">Tanggal</th>
-                <th scope="col" class="text-end">Jumlah</th>
-                <th scope="col" class="text-end">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">
-                  <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                    <i class="fa fa-check"></i>
-                  </button>
-                  Payment from #10231
-                </th>
-                <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                <td class="text-end">$250.00</td>
-                <td class="text-end">
-                  <span class="badge badge-success">Completed</span>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                    <i class="fa fa-check"></i>
-                  </button>
-                  Payment from #10231
-                </th>
-                <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                <td class="text-end">$250.00</td>
-                <td class="text-end">
-                  <span class="badge badge-success">Completed</span>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                    <i class="fa fa-check"></i>
-                  </button>
-                  Payment from #10231
-                </th>
-                <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                <td class="text-end">$250.00</td>
-                <td class="text-end">
-                  <span class="badge badge-success">Completed</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+      <tbody>
+        <tr>
+        @foreach ($last_activity as $item => $row)
+          <td>{{ $item+1 }}</td>
+          <td>{{ $row->TANGGAL }}</td>
+          <td>{{ $row->NIP }}</td>
+          <td>{{ $row->NAMA_PEGAWAI }}</td>
+          <td>{{ $row->ACTIVITY}}</td>
+          <td>{{ $row->DESCRIPTION }}</td>
+          @endforeach
+        </tr>
+      </tbody>
+    </table>
   </div>
+  @endrole
 @endsection
 
 @push('scripts')

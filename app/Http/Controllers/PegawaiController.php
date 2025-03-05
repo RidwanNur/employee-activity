@@ -6,15 +6,31 @@ use Carbon\Carbon;
 use App\Models\SKP;
 use App\Models\Activities;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PegawaiController extends Controller
 {
     public function index () {
-        return view('pegawai/dashboard');
+        $user = Auth::user();
+        if($user->is_atasan == 1){
+            $query_get_bawahan = "SELECT COUNT(*) AS TOTAL FROM EMPLOYEES WHERE NIP_ATASAN = '{$user->nip}'";
+        }else {
+            $query_get_bawahan = "SELECT 0 AS TOTAL";
+        }
+        $query_activities = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}'";
+        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}' AND STATUS IS NOT NULL";
+        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}' AND STATUS IS NULL";
+
+        $get_bawahan = DB::select($query_get_bawahan);
+        $get_activities = DB::select($query_activities);
+        $get_activities_delay = DB::select($query_activities_delay);
+        $get_activities_approve = DB::select($query_activities_approve);
+        return view('dashboard', compact('get_bawahan','get_activities','get_activities_delay','get_activities_approve'));
     }
 
     public function listSKP(){
-        return view('pegawai/dashboard');
+        return view('pegawai/skp');
     }
 
     
@@ -106,7 +122,7 @@ class PegawaiController extends Controller
 
 
     public function listActivity(){
-        return view('pegawai/dashboard');
+        return view('pegawai/activity');
     }
 
     
@@ -218,7 +234,7 @@ class PegawaiController extends Controller
 
 
     public function recapActivity(){
-
+        return view('pegawai.rekap');
     }
 
 

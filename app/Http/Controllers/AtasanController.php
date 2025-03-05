@@ -2,14 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class AtasanController extends Controller
 {
     public function index (){
-        return view('dashboard');
+        $user = Auth::user();
+        if($user->is_atasan == 1){
+            $query_get_bawahan = "SELECT COUNT(*) AS TOTAL FROM EMPLOYEES WHERE NIP_ATASAN = '{$user->nip}'";
+        }else {
+            $query_get_bawahan = "SELECT 0 AS TOTAL";
+        }
+        $query_activities = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE NIP_ATASAN = '{$user->nip}'";
+        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE NIP_ATASAN = '{$user->nip}' AND STATUS IS NOT NULL";
+        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE NIP_ATASAN = '{$user->nip}' AND STATUS IS NULL";
+
+        $bawahan = DB::select($query_get_bawahan);
+        $atasan_activity = DB::select($query_activities);
+        $atasan_activity_approve = DB::select($query_activities_approve);
+        $atasan_activity_delay= DB::select($query_activities_delay);
+        return view('dashboard', compact('bawahan','atasan_activity','atasan_activity_approve','atasan_activity_delay'));
     }
 
     public function listApproval(){
