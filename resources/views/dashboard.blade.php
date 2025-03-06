@@ -30,6 +30,10 @@
                 <p class="card-category">Total Pegawai</p>
                 <h4 class="card-title">{{ $total_employee[0]->TOTAL ?? 0  }}</h4>
                 @endrole
+                @role('pegawai')
+                <p class="card-category">Bawahan</p>
+                <h4 class="card-title">{{ $bawahan[0]->TOTAL ?? 0  }}</h4>
+                @endrole
               </div>
             </div>
           </div>

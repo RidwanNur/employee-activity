@@ -20,7 +20,7 @@
                 <div class="d-flex align-items-center">
                   <h4 class="card-title">Daftar SKP</h4>
                   <button class="btn btn-primary btn-round ms-auto" data-bs-toggle="modal"
-                    data-bs-target="#addRowModal">
+                    data-bs-target="#addSKPModal">
                     <i class="fa fa-plus"></i>
                     Tambah SKP
                   </button>
@@ -29,7 +29,7 @@
               <div class="card-body">
 
                 <!-- Modal Tambah SKP -->
-                <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" id="addSKPModal" tabindex="-1" role="dialog" aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-header border-0">
@@ -42,21 +42,21 @@
                         </button>
                       </div>
                       <div class="modal-body">
-                        <p class="small">
-                          Create a new row using this form, make sure you
-                          fill them all
-                        </p>
-                        <form>
+                        <form action="{{ route('pegawai.storeSKP') }}" method="POST">
+                            @csrf
                           <div class="row">
                             <div class="col-md-6">
                               <div class="form-group">
                                 <label>Bulan</label>
                                 <div class="dropdown">
                                   <select class="btn btn-light dropdown-toggle" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <option value="0" class="dropdown-item">Pilih Bulan</option>
-                                    <option value="0" class="dropdown-item">January</option>
-                                    <option value="0" class="dropdown-item">February</option>
+                                    data-bs-toggle="dropdown" aria-expanded="false" name="month" id="month">
+                                    <option value="" class="dropdown-item">Pilih Bulan</option>
+                                    @foreach($monthNames as $monthNumber => $monthLabel)
+                                    <option value="{{ $monthNumber }}">
+                                      {{ $monthLabel }}
+                                    </option>
+                                  @endforeach
                                   </select>
                                 </div>
                               </div>
@@ -66,10 +66,10 @@
                                 <label>Tahun</label>
                                 <div class="dropdown">
                                   <select class="btn btn-light dropdown-toggle" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <option value="0" class="dropdown-item">Pilih Tahun</option>
-                                    <option value="0" class="dropdown-item">2025</option>
-                                    <option value="0" class="dropdown-item">2026</option>
+                                    data-bs-toggle="dropdown" aria-expanded="false" name="year" id="year">
+                                    <option value="" class="dropdown-item">Pilih Tahun</option>
+                                    <option value="2025" class="dropdown-item">2025</option>
+                                    <option value="2026" class="dropdown-item">2026</option>
                                   </select>
                                 </div>
                               </div>
@@ -77,30 +77,34 @@
                             <div class="col-sm-12">
                               <div class="form-group">
                                 <label for="">Nama SKP</label>
-                                <input id="" type="text" class="form-control" placeholder="Isi sesuai SKP anda" />
+                                <input id="name_skp" name="name_skp" type="text" class="form-control" placeholder="Isi sesuai SKP anda" />
                               </div>
                             </div>
                           </div>
-                        </form>
-                      </div>
-                      <div class="modal-footer border-0">
-                        <button type="button" id="addRowButton" class="btn btn-primary" action="">
-                          Simpan
-                        </button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal" action="">
-                          Batal
-                        </button>
-                      </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="submit" class="btn btn-primary">
+                                Simpan
+                            </button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
                     </div>
                   </div>
                 </div>
                 <!-- End Modal -->
 
-                <!-- Tabel SKP -->
+                
+
+
+                                <!-- Tabel SKP -->
                 <div class="table-responsive">
                   <table id="add-row" class="display table table-striped table-hover">
                     <thead>
                       <tr>
+                        <th>No</th>
                         <th>Nama</th>
                         <th>Bulan</th>
                         <th>Tahun</th>
@@ -109,57 +113,98 @@
                     </thead>
 
                     <tbody>
+                        @foreach ($skp as $item => $row)
                       <tr>
-                        <td>Lorem ipsum</td>
-                        <td>Januari</td>
-                        <td>2025</td>
+                         {{-- {{return $item }} --}}
+                        <td>{{ $item + 1 }}</td>
+                        <td>{{ $row->name_skp }}</td>
+                        <td>{{ $monthNames[$row->month] ?? '-'}}</td>
+                        <td>{{ $row->year }}</td>
                         <td>
                           <div class="form-button-action">
-                            <button type="button" data-bs-toggle="tooltip" title=""
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#editSKPModal{{ $row->id }}" title=""
                               class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
                               <i class="fa fa-edit"></i>
                             </button>
-                            <button type="button" data-bs-toggle="tooltip" title=""
+                            {{-- <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editSKPModal{{ $row->id }}"> --}}
+                            <button type="button" data-bs-toggle="tooltip" title="" onclick="confirmDelete({{ $row->id }})"
                               class="btn btn-link btn-danger" data-original-title="Remove">
                               <i class="fa fa-times"></i>
                             </button>
                           </div>
                         </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem ipsum</td>
-                        <td>Februari</td>
-                        <td>2025</td>
-                        <td>
-                          <div class="form-button-action">
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                              <i class="fa fa-edit"></i>
+                    </tr>
+
+                    <!-- Form DELETE -->
+                    <form id="form-delete-{{ $row->id }}" 
+                        action="{{ route('pegawai.softDeleteSKP', $row->id) }}" 
+                        method="POST" 
+                        style="display: none;">
+                    @csrf
+                    @method('PUT')
+                </form>
+
+                                <!-- Modal Edit (per baris) -->
+                <div class="modal fade" id="editSKPModal{{ $row->id }}" tabindex="-1" aria-labelledby="editSKPModalLabel{{ $row->id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        
+                        <!-- Header Modal -->
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="editSKPModalLabel{{ $row->id }}">Edit SKP #{{ $row->id }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        
+                        <!-- Form Edit -->
+                        <form action="{{ route('pegawai.updateSKP', $row->id) }}" method="POST">
+                        @csrf
+                        @method('PUT') 
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="editMonth{{ $row->id }}" class="form-label">Bulan</label>
+                                <select name="month" id="editMonth{{ $row->id }}" class="form-select">
+                                <option value="">Pilih Bulan</option>
+                                @foreach($monthNames as $monthNumber => $monthLabel)
+                                    <option value="{{ $monthNumber }}" 
+                                    {{ $row->month == $monthNumber ? 'selected' : '' }}>
+                                    {{ $monthLabel }}
+                                    </option>
+                                @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editYear{{ $row->id }}" class="form-label">Tahun</label>
+                                <select name="year" id="editYear{{ $row->id }}" class="form-select">
+                                <option value="">Pilih Tahun</option>
+                                <!-- Contoh statis: 2025, 2026, 2027 -->
+                                <option value="2025" {{ $row->year == 2025 ? 'selected' : '' }}>2025</option>
+                                <option value="2026" {{ $row->year == 2026 ? 'selected' : '' }}>2026</option>
+                                <option value="2027" {{ $row->year == 2027 ? 'selected' : '' }}>2027</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editNameSKP{{ $row->id }}" class="form-label">Nama SKP</label>
+                                <input type="text" 
+                                    class="form-control" 
+                                    id="editNameSKP{{ $row->id }}" 
+                                    name="name_skp" 
+                                    value="{{ $row->name_skp }}">
+                            </div>
+                        </div>
+                        
+                        <!-- Footer Modal -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
                             </button>
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-danger" data-original-title="Remove">
-                              <i class="fa fa-times"></i>
+                            <button type="submit" class="btn btn-primary">
+                            Save changes
                             </button>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem ipsum</td>
-                        <td>Maret</td>
-                        <td>2025</td>
-                        <td>
-                          <div class="form-button-action">
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                              <i class="fa fa-edit"></i>
-                            </button>
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-danger" data-original-title="Remove">
-                              <i class="fa fa-times"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                        </div>
+                        </form>
+                        <!-- End Form Edit -->
+
+                    @endforeach
                     </tbody>
                   </table>
                 </div>
@@ -174,6 +219,42 @@
 @endsection
 
 @push('scripts')
+@if (session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 3000,
+        showConfirmButton: false
+    })
+</script>
+@endif
+
+<script>
+    function confirmDelete(id) {
+        let form = document.getElementById('form-delete-' + id);
+        if (!form) {
+            console.error('Form with ID form-delete-' + id + ' not found!');
+            return;
+        }
+      Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: 'Data ini akan dihapus secara permanen!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Submit form
+          document.getElementById('form-delete-' + id).submit();
+        }
+      })
+    }
+    </script>
       <!-- Search JS -->
   <script>
     $(document).ready(function () {
