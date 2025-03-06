@@ -4,22 +4,54 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\SKP;
+use App\Models\Employees;
 use App\Models\Activities;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PegawaiController extends Controller
 {
     public function index () {
-        return view('pegawai/dashboard');
+        $user = Auth::user();
+        if($user->is_atasan == 1){
+            $query_get_bawahan = "SELECT COUNT(*) AS TOTAL FROM EMPLOYEES WHERE NIP_ATASAN = '{$user->nip}'";
+        }else {
+            $query_get_bawahan = "SELECT 0 AS TOTAL";
+        }
+        $query_activities = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}'";
+        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}' AND STATUS IS NOT NULL";
+        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}' AND STATUS IS NULL";
+
+        $get_bawahan = DB::select($query_get_bawahan);
+        $get_activities = DB::select($query_activities);
+        $get_activities_delay = DB::select($query_activities_delay);
+        $get_activities_approve = DB::select($query_activities_approve);
+        return view('dashboard', compact('get_bawahan','get_activities','get_activities_delay','get_activities_approve'));
     }
 
     public function listSKP(){
-        return view('pegawai/dashboard');
+        $skp = SKP::whereNull('is_deleted')->get();
+        $monthNames = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
+        return view('pegawai/skp', compact('skp','monthNames'));
     }
 
     
     public function storeSKP (Request $request){
-        
         $validator = Validator::make($request->all(), [
             'name_skp' => 'required',
             'month' => 'required',
@@ -30,7 +62,7 @@ class PegawaiController extends Controller
             return response()->json($validator->errors(), 422);
         }
         
-        $employee = Employee::findorFail(Auth::user()->id);
+        $employee = Employees::findorFail(Auth::user()->id);
         $time_now = Carbon::now();
         $checkSKP = SKP::where('employee_id', $employee->id)
         ->where('month', $time_now->month)
@@ -51,11 +83,11 @@ class PegawaiController extends Controller
             'name_skp' => $request->name_skp,
             'month' => $request->month,
             'year' => $request->year,
-            'created_at' => Carbon::now
+            'created_at' => $time_now
         ]);
 
 
-        return redirect()->back()->with(['message' => 'Record inserted successfully.', 'data' => $skp]);
+        return redirect()->back()->with('success' ,'Record inserted successfully.');
 
     }
 
@@ -87,11 +119,11 @@ class PegawaiController extends Controller
             'name_skp' => $request->name_skp,
             'month' => $request->month,
             'year' => $request->year,
-            'updated_at' => Carbon::now
+            'updated_at' => Carbon::now()
         ]);
 
 
-        return redirect()->back()->with(['message' => 'Record updated successfully.', 'data' => $skp]);
+        return redirect()->back()->with('success' ,'Record updated successfully.');
 
     }
 
@@ -101,12 +133,12 @@ class PegawaiController extends Controller
             'is_deleted' => 1,
         ]);
 
-        return redirect()->back()->with(['message' => 'Record deleted successfully.', 'data' => $skp]);
+        return redirect()->back()->with('success' ,'Record deleted successfully.');
     }  
 
 
     public function listActivity(){
-        return view('pegawai/dashboard');
+        return view('pegawai/activity');
     }
 
     
@@ -218,7 +250,7 @@ class PegawaiController extends Controller
 
 
     public function recapActivity(){
-
+        return view('pegawai.rekap');
     }
 
 

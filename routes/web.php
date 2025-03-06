@@ -5,9 +5,10 @@ use App\Http\Controllers\AtasanController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 // Route::middleware(['role:admin'])->group(function () {
@@ -39,9 +40,10 @@ Route::middleware('auth','verified')->group(function () {
     Route::post('/aktivitas/create', [PegawaiController::class, 'storeActivity'])->name('pegawai.storeActivity');
     Route::post('/aktivitas/update/{id}', [PegawaiController::class, 'updateActivity'])->name('pegawai.updateActivity');
     Route::get('/aktivitas/filter', [PegawaiController::class, 'storeActivity'])->name('pegawai.filterActivity');
+    Route::get('/skp', [PegawaiController::class, 'listSKP'])->name('atasan.listSKP');
     Route::post('/skp/create', [PegawaiController::class, 'storeSKP'])->name('pegawai.storeSKP');
-    Route::post('/skp/update/{id}', [PegawaiController::class, 'updateSKP'])->name('pegawai.updateSKP');
-    Route::post('/skp/delete/{id}', [PegawaiController::class, 'softDeleteSKP'])->name('pegawai.softDeleteSKP');
+    Route::put('/skp/update/{id}', [PegawaiController::class, 'updateSKP'])->name('pegawai.updateSKP');
+    Route::put('/skp/delete/{id}', [PegawaiController::class, 'softDeleteSKP'])->name('pegawai.softDeleteSKP');
     Route::get('/skp/filter', [PegawaiController::class, 'filterSKP'])->name('pegawai.filterSKP');
     Route::get('/rekap', [PegawaiController::class, 'recapActivity'])->name('pegawai.recapActivity');
 });
