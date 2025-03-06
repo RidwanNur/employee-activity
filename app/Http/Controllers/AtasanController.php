@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Activities;
+use App\Models\Employees;
+use Carbon\Carbon;
 
+use App\Models\SKP;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class AtasanController extends Controller
@@ -45,9 +50,23 @@ class AtasanController extends Controller
     }
 
     public function listSKP(){
-        return view('pegawai/skp');
-
-        
+        $user = Auth::user();
+        $skp = SKP::whereNull('is_deleted')->where('created_by', $user->nip)->get();
+        $monthNames = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
+        return view('pegawai/skp', compact('skp','monthNames'));   
     }
 
     
@@ -63,19 +82,20 @@ class AtasanController extends Controller
             return response()->json($validator->errors(), 422);
         }
         
-        $employee = Employee::findorFail(Auth::user()->id);
-        $time_now = Carbon::now();
-        $checkSKP = SKP::where('employee_id', $employee->id)
-        ->where('month', $time_now->month)
-        ->where('year', $time_now->year)
+        $employee = Employees::where('nip', Auth::user()->nip)->first();
+        // $skpList = SKP::whereNull('is_deleted')->where('created_by', $employee->nip)->get();
+        // return $skpList;
+        // foreach ($skpList as $key) {
+        //     return $key->month;
+        // }
+        $checkSKP = SKP::
+        where('month', $request->month)
+        ->where('year', $request->year)
+        ->where('created_by', $employee->nip)
         ->first();
 
         if ($checkSKP) {
-            return redirect()->back()->with([
-                'code' => 409,
-                'status' => 'Error',
-                'message' => 'SKP sudah ada di bulan dan tahun tersebut!'
-            ], 409);
+            return redirect()->back()->with('error' ,'Sudah input SKP di bulan dan tahun tersebut!');
         }
 
 
@@ -84,12 +104,12 @@ class AtasanController extends Controller
             'name_skp' => $request->name_skp,
             'month' => $request->month,
             'year' => $request->year,
-            'created_at' => Carbon::now
+            'created_at' => Carbon::now(),
+            'created_by' => Auth::user()->nip
         ]);
 
 
-        return redirect()->back()->with(['message' => 'Record inserted successfully.', 'data' => $skp]);
-
+        return redirect()->back()->with('success' ,'Record inserted successfully.');
     }
 
 
@@ -105,27 +125,29 @@ class AtasanController extends Controller
             return response()->json($validator->errors(), 422);
         }
         
-
-        if($request->total_working_day > 28){
-            return redirect()->back()->with([
-                'code' => 409,
-                'status' => 'Error',
-                'message' => 'Hari kerja melebihi ketentuan!'
-            ], 409);
-        }
-
        $skp =  SKP::findOrFail($id);
+
+       $employee = Employees::where('nip', Auth::user()->nip)->first();
+       $checkSKP = SKP::
+       where('month', $request->month)
+       ->where('year', $request->year)
+       ->where('created_by', $employee->nip)
+       ->first();
+
+       if ($checkSKP) {
+           return redirect()->back()->with('error' ,'Sudah ada SKP di bulan dan tahun tersebut!');
+       }
+       
        
        $skp->update([
             'name_skp' => $request->name_skp,
             'month' => $request->month,
             'year' => $request->year,
-            'updated_at' => Carbon::now
+            'updated_at' => Carbon::now(),
         ]);
 
 
-        return redirect()->back()->with(['message' => 'Record updated successfully.', 'data' => $skp]);
-
+        return redirect()->back()->with('success' ,'Record updated successfully.');
     }
 
     public function softDeleteSKP($id){
@@ -133,13 +155,15 @@ class AtasanController extends Controller
         $skp->update([
             'is_deleted' => 1,
         ]);
-
-        return redirect()->back()->with(['message' => 'Record deleted successfully.', 'data' => $skp]);
+        // $skp->delete();
+        return redirect()->back()->with('success' ,'Record deleted successfully.');    
     }  
 
 
     public function listActivity(){
-        return view('pegawai/activity');
+        $activities = Activities::whereNull('is_deleted')->where('created_by', Auth::user()->nip)->with('skp')->get();
+        $skp = SKP::whereNull('is_deleted')->where('created_by', Auth::user()->nip)->get();
+        return view('pegawai/activity', compact('activities', 'skp'));
     }
 
     
@@ -163,22 +187,19 @@ class AtasanController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
         
-        $employee = Employee::findorFail(Auth::user()->id);
-        $time_now = Carbon::now();
-        $checkActivity = SKP::where('employee_id', $employee->id)
-        ->where('created_at', $time_now)
-        ->first();
+        $employee = Employees::findorFail(Auth::user()->id);
+        // $time_now = Carbon::now();
+        // $checkActivity = SKP::where('employee_id', $employee->id)
+        // ->where('created_at', $request->created_at)
+        // ->first();
 
-        if ($checkActivity) {
-            return redirect()->back()->with([
-                'code' => 409,
-                'status' => 'Error',
-                'message' => 'Anda sudah membuat aktivitas harian!'
-            ], 409);
-        }
+        // if ($checkActivity) {
+        //     return redirect()->back()->with('error' ,'');
+
+        // }
 
 
        $activities =  Activities::create([
@@ -186,15 +207,16 @@ class AtasanController extends Controller
             'skp_id' => $request->skp_id,
             'activity' => $request->activity,
             'description' => $request->description,
-            'created_by' => Auth::user()->id,
+            'created_by' => Auth::user()->nip,
             'created_name' => Auth::user()->username,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
-            'created_at' => Carbon::now
+            'nip_atasan'=> $employee->nip_atasan,
+            'created_at' => Carbon::now()
         ]);
 
 
-        return redirect()->back()->with(['message' => 'Record inserted successfully.', 'data' => $activities]);
+        return redirect()->back()->with('success' ,'Record inserted successfully.');
 
     }
 
@@ -205,40 +227,45 @@ class AtasanController extends Controller
             'skp_id' => 'required',
             'activity' => 'required',
             'description' => 'required',
-            'start_time' => ['required', 'date_format:H:i', 'before:end_time', 'after_or_equal:08:00'],
-            'end_time'   => ['required', 'date_format:H:i', 'after:start_time', 'before_or_equal:17:00'],
+            'start_time' => ['required', 'before:end_time', 'after_or_equal:08:00'],
+            'end_time'   => ['required', 'after:start_time', 'before_or_equal:17:00'],
         ],[
             'start_time.required' => 'Jam mulai wajib diisi.',
-            'start_time.date_format' => 'Format jam mulai harus HH:MM.',
             'start_time.before' => 'Jam mulai harus sebelum jam selesai.',
             'start_time.after_or_equal' => 'Jam mulai minimal pukul 08:00.',
             'end_time.required' => 'Jam selesai wajib diisi.',
-            'end_time.date_format' => 'Format jam selesai harus HH:MM.',
             'end_time.after' => 'Jam selesai harus setelah jam mulai.',
             'end_time.before_or_equal' => 'Jam selesai maksimal pukul 17:00.',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
-        
+                
         $activities = Activities::findOrFail($id);
 
        $activities->update([
             'skp_id' => $request->skp_id,
             'activity' => $request->activity,
             'description' => $request->description,
-            'created_by' => Auth::user()->id,
-            'created_name' => Auth::user()->username,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
-            'updated_at' => Carbon::now
+            'updated_at' => Carbon::now()
         ]);
 
 
-        return redirect()->back()->with(['message' => 'Record inserted successfully.', 'data' => $activities]);
+        return redirect()->back()->with('success' ,'Record updated successfully.');
 
     }
+
+    public function softDeleteActivity ($id){
+        $activity = Activities::findOrFail($id);
+        $activity->update([
+            'is_deleted' => 1,
+        ]);
+        // $acti->delete();
+        return redirect()->back()->with('success' ,'Record deleted successfully.');    
+    }  
 
     public function filterActivity(){
 

@@ -20,7 +20,6 @@
             <div class="card">
               <div class="card-header">
                 <div class="d-flex align-items-center">
-                  <h4 class="card-title">Appoval Aktivitas</h4>
                   <button class="btn btn-primary btn-round ms-auto" data-bs-toggle="modal"
                     data-bs-target="#addRowModal">
                     <i class="fa fa-plus"></i>
@@ -29,7 +28,7 @@
                 </div>
               </div>
               <div class="card-body">
-
+                @role('atasan')
                 <!-- Modal Tambah Aktivitas -->
                 <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
                   <div class="modal-dialog" role="document">
@@ -44,149 +43,462 @@
                         </button>
                       </div>
                       <div class="modal-body">
-                        <p class="small">
-                          Create a new row using this form, make sure you
-                          fill them all
-                        </p>
-                        <form>
+                        <form action="{{ route('atasan.storeActivity') }}" method="POST">
+                            @csrf
                           <div class="row">
                             <div class="col-md-6">
                               <div class="form-group">
                                 <label>Jam Mulai</label>
-                                <input id="addPosition" type="time" class="form-control" placeholder="" />
+                                <input id="addPosition" name="start_time" type="time" class="form-control" placeholder="" />
                               </div>
                             </div>
                             <div class="col-md-6">
                               <div class="form-group">
                                 <label>Jam Selesai</label>
-                                <input id="addOffice" type="time" class="form-control" placeholder="" />
+                                <input id="addOffice" name="end_time" type="time" class="form-control" placeholder="" />
                               </div>
                             </div>
-                            <div class="col-sm-12">
+                            <div class="col-md-6">
                               <div class="form-group">
                                 <label>SKP Acuan</label>
-                                <select id="addName" type="" class="form-select" placeholder="Sesuaikan SKP">
-                                  <option selected>Open this select menu</option>
-                                  <option value="1">One</option>
-                                  <option value="2">Two</option>
-                                  <option value="3">Three</option>
-                                </select>
+                                <select class="btn btn-light dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false" name="skp_id" id="skp_id">
+                                    <option value="" class="dropdown-item">Pilih SKP</option>
+                                    @foreach($skp as $item => $rowSkp)
+                                    <option value="{{ $rowSkp->id }}">
+                                      {{ $rowSkp->name_skp }}
+                                    </option>
+                                  @endforeach
+                                  </select>
                               </div>
                             </div>
                             <div class="col-sm-12">
                               <div class="form-group">
                                 <label for="">Aktivitas</label>
-                                <input id="" type="text" class="form-control"
+                                <input id="activity" type="text" name="activity" class="form-control"
                                   placeholder="Isi sesuai aktivitas anda" />
                               </div>
                             </div>
                             <div class="col-sm-12">
                               <div class="form-group">
                                 <label for="">Deskripsi</label>
-                                <textarea id="" type="text" class="form-control"
+                                <textarea id="description" type="text" name="description" class="form-control"
                                   placeholder="Isi sesuai aktivitas anda"></textarea>
                               </div>
                             </div>
                           </div>
-                        </form>
-                      </div>
-                      <div class="modal-footer border-0">
-                        <button type="button" id="addRowButton" class="btn btn-primary" action="">
-                          Add
-                        </button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal" action="">
-                          Close
-                        </button>
-                      </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="submit"  class="btn btn-primary">
+                                Add
+                            </button>
+                            {{-- <button type="button" class="btn btn-danger" data-dismiss="modal" action="">
+                                Close
+                            </button> --}}
+                        </div>
+                    </form>
                     </div>
                   </div>
                 </div>
+                @endrole
+                <!-- End Modal -->
+
+                @role('pegawai')
+                <!-- Modal Tambah Aktivitas -->
+                <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header border-0">
+                        <h5 class="modal-title">
+                          <span class="fw-mediumbold"> Tambah</span>
+                          <span class="fw-light"> Aktivitas </span>
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" action="close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="{{ route('pegawai.storeActivity') }}" method="POST">
+                            @csrf
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label>Jam Mulai</label>
+                                <input id="addPosition" name="start_time" type="time" class="form-control" placeholder="" />
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label>Jam Selesai</label>
+                                <input id="addOffice" name="end_time" type="time" class="form-control" placeholder="" />
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label>SKP Acuan</label>
+                                <select class="btn btn-light dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false" name="skp_id" id="skp_id">
+                                    <option value="" class="dropdown-item">Pilih SKP</option>
+                                    @foreach($skp as $item => $rowSkp)
+                                    <option value="{{ $rowSkp->id }}">
+                                      {{ $rowSkp->name_skp }}
+                                    </option>
+                                  @endforeach
+                                  </select>
+                              </div>
+                            </div>
+                            <div class="col-sm-12">
+                              <div class="form-group">
+                                <label for="">Aktivitas</label>
+                                <input id="activity" type="text" name="activity" class="form-control"
+                                  placeholder="Isi sesuai aktivitas anda" />
+                              </div>
+                            </div>
+                            <div class="col-sm-12">
+                              <div class="form-group">
+                                <label for="">Deskripsi</label>
+                                <textarea id="description" type="text" name="description" class="form-control"
+                                  placeholder="Isi sesuai aktivitas anda"></textarea>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="submit"  class="btn btn-primary">
+                                Add
+                            </button>
+                            {{-- <button type="button" class="btn btn-danger" data-dismiss="modal" action="">
+                                Close
+                            </button> --}}
+                        </div>
+                    </form>
+                    </div>
+                  </div>
+                </div>
+                @endrole
                 <!-- End Modal -->
 
                 <!-- Tabel Aktivitas -->
+                @role('atasan')
                 <div class="table-responsive">
                   <table id="add-row" class="display table table-striped table-hover">
                     <thead>
-                      <tr>
-                        <th>Tanggal</th>
-                        <th>Waktu Mulai</th>
-                        <th>Waktu Selesai</th>
-                        <th>SKP</th>
-                        <th>Aktivitas</th>
-                        <th>Deskripsi</th>
-                        <th>Status Approval</th>
-                        <th style="width: 10%">Aksi</th>
-                      </tr>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Waktu Mulai</th>
+                            <th>Waktu Selesai</th>
+                            <th>SKP</th>
+                            <th>Aktivitas</th>
+                            <th>Deskripsi</th>
+                            <th>Status Approval</th>
+                            <th style="width: 10%">Aksi</th>
+                        </tr>
                     </thead>
-
+                    
                     <tbody>
+                        @foreach ($activities as $item => $row)
                       <tr>
-                        <td>08 Maret 2025</td>
-                        <td>07.00 AM</td>
-                        <td>04.00 PM</td>
-                        <td>Lorem ipsum</td>
-                        <td>Meeting Proyek</td>
-                        <td>Lorem ipsum</td>
-                        <td>Waktu Selesai</td>
+                        <td>{{ $row->created_at }}</td>
+                        <td>{{ $row->start_time }}</td>
+                        <td>{{ $row->end_time }}</td>
+                        <td>{{ $row->skp->name_skp }}</td>
+                        <td>{{ $row->activity }}</td>
+                        <td>{{ $row->description }}</td>
+                        @if ($row->status == null || $row->status == '')
+                        <td>Menunggu Persetujuan</td>
+                        @elseif($row->status == 1)
+                        <td>Sudah Approval</td>
+                        @else
+                        <td>{{ $row->status }}</td>
+                        @endif
                         <td>
-                          <div class="form-button-action">
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                              <i class="fa fa-edit"></i>
-                            </button>
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-danger" data-original-title="Remove">
-                              <i class="fa fa-times"></i>
-                            </button>
-                          </div>
+                            
+                            <div class="form-button-action">
+                                @if ($row->status == null)
+                                <button type="button" 
+                                data-bs-toggle="modal" data-bs-target="#editRowModal{{ $row->id }}" title=""
+                                  class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                  <i class="fa fa-edit"></i>
+                                </button>
+                                <button type="button" data-bs-toggle="tooltip" title="" onclick="confirmDelete({{ $row->id }})"
+                                  class="btn btn-link btn-danger" data-original-title="Remove">
+                                  <i class="fa fa-times"></i>
+                                </button>
+                                @else
+                                <button type="button" 
+                                 onclick="cannotEditWarning()"
+                                  class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                  <i class="fa fa-edit"></i>
+                                </button>
+                                <button type="button" onclick="cannotEditWarning()"
+                                  class="btn btn-link btn-danger" data-original-title="Remove">
+                                  <i class="fa fa-times"></i>
+                                </button>
+                                
+                                @endif
+                            </div>
                         </td>
                       </tr>
-                      <tr>
-                        <td>08 Maret 2025</td>
-                        <td>07.00 AM</td>
-                        <td>04.00 PM</td>
-                        <td>Lorem ipsum</td>
-                        <td>Meeting Proyek</td>
-                        <td>Lorem ipsum</td>
-                        <td>Waktu Selesai</td>
-                        <td>
-                          <div class="form-button-action">
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                              <i class="fa fa-edit"></i>
-                            </button>
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-danger" data-original-title="Remove">
-                              <i class="fa fa-times"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>08 Maret 2025</td>
-                        <td>07.00 AM</td>
-                        <td>04.00 PM</td>
-                        <td>Lorem ipsum</td>
-                        <td>Meeting Proyek</td>
-                        <td>Lorem ipsum loros</td>
-                        <td>Waktu Selesai</td>
-                        <td>
-                          <div class="form-button-action">
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                              <i class="fa fa-edit"></i>
-                            </button>
-                            <button type="button" data-bs-toggle="tooltip" title=""
-                              class="btn btn-link btn-danger" data-original-title="Remove">
-                              <i class="fa fa-times"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                        <div class="modal fade" id="editRowModal{{ $row->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title">
+                                <span class="fw-mediumbold">Edit</span>
+                                <span class="fw-light">Aktivitas</span>
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" action="close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Body Modal: Form Edit -->
+                            <div class="modal-body">
+                                <form action="{{ route('atasan.updateActivity', $row->id) }}" method="POST">
+                                @csrf
+                                @method('PUT') 
+                                
+                                <div class="row">
+                                    <!-- Jam Mulai -->
+                                    <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Jam Mulai</label>
+                                        <input type="time" name="start_time" class="form-control"
+                                            value="{{ $row->start_time }}" />
+                                    </div>
+                                    </div>
+                                    <!-- Jam Selesai -->
+                                    <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Jam Selesai</label>
+                                        <input type="time" name="end_time" class="form-control"
+                                            value="{{ $row->end_time }}" />
+                                    </div>
+                                    </div>
+                                    
+                                    <!-- SKP Acuan -->
+                                    <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>SKP Acuan</label>
+                                        <select name="skp_id" class="btn btn-light dropdown-toggle">
+                                        <option value="">Pilih SKP</option>
+                                        @foreach($skp as $skpRow)
+                                            <option value="{{ $skpRow->id }}"
+                                            {{ $row->skp_id == $skpRow->id ? 'selected' : '' }}>
+                                            {{ $skpRow->name_skp }}
+                                            </option>
+                                        @endforeach
+                                        </select>
+                                    </div>
+                                    </div>
+                                    
+                                    <!-- Aktivitas -->
+                                    <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>Aktivitas</label>
+                                        <input type="text" name="activity" class="form-control"
+                                            value="{{ $row->activity }}" />
+                                    </div>
+                                    </div>
+                                    
+                                    <!-- Deskripsi -->
+                                    <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>Deskripsi</label>
+                                        <textarea name="description" class="form-control"
+                                        placeholder="Isi sesuai aktivitas anda">{{ $row->description }}</textarea>
+                                    </div>
+                                    </div>
+                                </div>
+                                <!-- End Row -->
+
+                                <!-- Footer Modal -->
+                                <div class="modal-footer border-0">
+                                    <button type="submit" class="btn btn-primary">
+                                    Save
+                                    </button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                    Close
+                                    </button>
+                                </div>
+                                </form>
+                                <form id="form-delete-{{ $row->id }}" 
+                                    action="{{ route('atasan.softDeleteActivity', $row->id) }}" 
+                                    method="POST" 
+                                    style="display: none;">
+                                @csrf
+                                @method('PUT')
+                            </div> <!-- modal-body -->
+                            </div> <!-- modal-content -->
+                        </div> <!-- modal-dialog -->
+                        </div> <!-- modal fade -->
+                      @endforeach
                     </tbody>
                   </table>
                 </div>
+                @endrole
                 <!-- End Tabel Aktivitas -->
+
+                                <!-- Tabel Aktivitas -->
+                                @role('pegawai')
+                                <div class="table-responsive">
+                                  <table id="add-row" class="display table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Waktu Mulai</th>
+                                            <th>Waktu Selesai</th>
+                                            <th>SKP</th>
+                                            <th>Aktivitas</th>
+                                            <th>Deskripsi</th>
+                                            <th>Status Approval</th>
+                                            <th style="width: 10%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody>
+                                        @foreach ($activities as $item => $row)
+                                      <tr>
+                                        <td>{{ $row->created_at }}</td>
+                                        <td>{{ $row->start_time }}</td>
+                                        <td>{{ $row->end_time }}</td>
+                                        <td>{{ $row->skp->name_skp }}</td>
+                                        <td>{{ $row->activity }}</td>
+                                        <td>{{ $row->description }}</td>
+                                        @if ($row->status == null || $row->status == '')
+                                        <td>Menunggu Persetujuan</td>
+                                        @elseif($row->status == 1)
+                                        <td>Sudah Approval</td>
+                                        @else
+                                        <td>{{ $row->status }}</td>
+                                        @endif
+                                        <td>
+                                            
+                                            <div class="form-button-action">
+                                                @if ($row->status == null)
+                                                <button type="button" 
+                                                data-bs-toggle="modal" data-bs-target="#editRowModal{{ $row->id }}" title=""
+                                                  class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                  <i class="fa fa-edit"></i>
+                                                </button>
+                                                <button type="button" data-bs-toggle="tooltip" title="" onclick="confirmDelete({{ $row->id }})"
+                                                  class="btn btn-link btn-danger" data-original-title="Remove">
+                                                  <i class="fa fa-times"></i>
+                                                </button>
+                                                @else
+                                                <button type="button" 
+                                                 onclick="cannotEditWarning()"
+                                                  class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+                                                  <i class="fa fa-edit"></i>
+                                                </button>
+                                                <button type="button" onclick="cannotEditWarning()"
+                                                  class="btn btn-link btn-danger" data-original-title="Remove">
+                                                  <i class="fa fa-times"></i>
+                                                </button>
+                                                
+                                                @endif
+                                            </div>
+                                        </td>
+                                      </tr>
+                                        <div class="modal fade" id="editRowModal{{ $row->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                            <div class="modal-header border-0">
+                                                <h5 class="modal-title">
+                                                <span class="fw-mediumbold">Edit</span>
+                                                <span class="fw-light">Aktivitas</span>
+                                                </h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" action="close">
+                                                <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Body Modal: Form Edit -->
+                                            <div class="modal-body">
+                                                <form action="{{ route('pegawai.updateActivity', $row->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT') 
+                                                
+                                                <div class="row">
+                                                    <!-- Jam Mulai -->
+                                                    <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Jam Mulai</label>
+                                                        <input type="time" name="start_time" class="form-control"
+                                                            value="{{ $row->start_time }}" />
+                                                    </div>
+                                                    </div>
+                                                    <!-- Jam Selesai -->
+                                                    <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Jam Selesai</label>
+                                                        <input type="time" name="end_time" class="form-control"
+                                                            value="{{ $row->end_time }}" />
+                                                    </div>
+                                                    </div>
+                                                    
+                                                    <!-- SKP Acuan -->
+                                                    <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>SKP Acuan</label>
+                                                        <select name="skp_id" class="btn btn-light dropdown-toggle">
+                                                        <option value="">Pilih SKP</option>
+                                                        @foreach($skp as $skpRow)
+                                                            <option value="{{ $skpRow->id }}"
+                                                            {{ $row->skp_id == $skpRow->id ? 'selected' : '' }}>
+                                                            {{ $skpRow->name_skp }}
+                                                            </option>
+                                                        @endforeach
+                                                        </select>
+                                                    </div>
+                                                    </div>
+                                                    
+                                                    <!-- Aktivitas -->
+                                                    <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label>Aktivitas</label>
+                                                        <input type="text" name="activity" class="form-control"
+                                                            value="{{ $row->activity }}" />
+                                                    </div>
+                                                    </div>
+                                                    
+                                                    <!-- Deskripsi -->
+                                                    <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label>Deskripsi</label>
+                                                        <textarea name="description" class="form-control"
+                                                        placeholder="Isi sesuai aktivitas anda">{{ $row->description }}</textarea>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <!-- End Row -->
+                
+                                                <!-- Footer Modal -->
+                                                <div class="modal-footer border-0">
+                                                    <button type="submit" class="btn btn-primary">
+                                                    Save
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                                    Close
+                                                    </button>
+                                                </div>
+                                                </form>
+                                                <form id="form-delete-{{ $row->id }}" 
+                                                    action="{{ route('pegawai.softDeleteActivity', $row->id) }}" 
+                                                    method="POST" 
+                                                    style="display: none;">
+                                                @csrf
+                                                @method('PUT')
+                                            </div> <!-- modal-body -->
+                                            </div> <!-- modal-content -->
+                                        </div> <!-- modal-dialog -->
+                                        </div> <!-- modal fade -->
+                                      @endforeach
+                                    </tbody>
+                                  </table>
+                                </div>
+                                      @endrole
+                                <!-- End Tabel Aktivitas -->
               </div>
             </div>
           </div>
@@ -198,6 +510,95 @@
 
 
 @push('scripts')
+
+@if (session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 3000,
+        showConfirmButton: false
+    })
+</script>
+@endif
+
+@if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: '{{ session('error') }}',
+            })
+        </script>
+@endif
+
+@if ($errors->any())
+  <script>
+    const errorHtml = `
+    <div style="text-align: left;">
+      <strong>Terjadi kesalahan:</strong></br>
+      <ul>
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  `;
+
+    // Panggil SweetAlert
+    Swal.fire({
+      icon: 'error',
+      title: 'Pengisian Gagal!',
+        html: errorHtml,
+        confirmButtonText: 'OK'
+    });
+  </script>
+@endif
+
+<script>
+    function cannotEditWarning() {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Tidak Dapat Diedit / Dihapus',
+        text: 'Data ini sudah disetujui, Anda tidak dapat mengeditnya/menghapusnya lagi.',
+      });
+    }
+    
+    function cannotDeleteWarning() {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Tidak Dapat Dihapus',
+        text: 'Data ini sudah disetujui, Anda tidak dapat menghapusnya lagi.',
+      });
+    }
+    </script>
+
+<script>
+function confirmDelete(id) {
+    let form = document.getElementById('form-delete-' + id);
+        if (!form) {
+            console.error('Form with ID form-delete-' + id + ' not found!');
+            return;
+        }
+  Swal.fire({
+    title: 'Apakah Anda yakin?',
+    text: 'Data ini akan dihapus secara permanen!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Submit form
+      document.getElementById('form-delete-' + id).submit();
+    }
+  })
+}
+</script>
+
 !-- Search JS (DataTables init, dsb) -->
 <script>
   $(document).ready(function () {

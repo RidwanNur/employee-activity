@@ -39,6 +39,7 @@ Route::middleware('auth','verified')->group(function () {
     Route::get('/aktivitas', [PegawaiController::class, 'listActivity'])->name('pegawai.listActivity');
     Route::post('/aktivitas/create', [PegawaiController::class, 'storeActivity'])->name('pegawai.storeActivity');
     Route::post('/aktivitas/update/{id}', [PegawaiController::class, 'updateActivity'])->name('pegawai.updateActivity');
+    Route::put('/aktivitas/delete/{id}', [PegawaiController::class, 'softDeleteActivity'])->name('pegawai.softDeleteActivity');
     Route::get('/aktivitas/filter', [PegawaiController::class, 'storeActivity'])->name('pegawai.filterActivity');
     Route::get('/skp', [PegawaiController::class, 'listSKP'])->name('atasan.listSKP');
     Route::post('/skp/create', [PegawaiController::class, 'storeSKP'])->name('pegawai.storeSKP');
@@ -58,12 +59,13 @@ Route::middleware('auth','verified')->group(function () {
     Route::post('/approval/approve', [AtasanController::class, 'ApproveActivity'])->name('atasan.ApproveActivity');
     Route::get('/aktivitas', [AtasanController::class, 'listActivity'])->name('atasan.listActivity');
     Route::post('/aktivitas/create', [AtasanController::class, 'storeActivity'])->name('atasan.storeActivity');
-    Route::post('/aktivitas/update/{id}', [AtasanController::class, 'updateActivity'])->name('atasan.updateActivity');
+    Route::put('/aktivitas/update/{id}', [AtasanController::class, 'updateActivity'])->name('atasan.updateActivity');
+    Route::put('/aktivitas/delete/{id}', [AtasanController::class, 'softDeleteActivity'])->name('atasan.softDeleteActivity');
     Route::get('/aktivitas-filter', [AtasanController::class, 'storeActivity'])->name('atasan.filterActivity');
     Route::get('/skp', [AtasanController::class, 'listSKP'])->name('atasan.listSKP');
     Route::post('/skp/create', [AtasanController::class, 'storeSKP'])->name('atasan.storeSKP');
-    Route::post('/skp/update/{id}', [AtasanController::class, 'updateSKP'])->name('atasan.updateSKP');
-    Route::post('/skp/delete/{id}', [AtasanController::class, 'softDeleteSKP'])->name('atasan.softDeleteSKP');
+    Route::put('/skp/update/{id}', [AtasanController::class, 'updateSKP'])->name('atasan.updateSKP');
+    Route::put('/skp/delete/{id}', [AtasanController::class, 'softDeleteSKP'])->name('atasan.softDeleteSKP');
     Route::get('/skp-filter', [AtasanController::class, 'filterSKP'])->name('atasan.filterSKP');
     Route::get('/rekap', [AtasanController::class, 'recapActivity'])->name('atasan.recapActivity');
 });
