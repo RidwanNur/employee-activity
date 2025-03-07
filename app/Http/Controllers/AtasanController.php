@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class AtasanController extends Controller
 {
@@ -277,9 +278,77 @@ class AtasanController extends Controller
     }
 
 
-    public function recapActivity(){
+    public function listRecap(Request $request){
+        
+    $year = $request->input('year');
 
+
+    $query = Activities::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+    ->groupByRaw('MONTH(created_at)')
+    ->orderByRaw('MONTH(created_at)');
+
+    if ($year) {
+        $query->whereYear('created_at', $year);
     }
+
+    $bulanAktivitas = $query->get();
+
+    $monthNames = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+        4 => 'April',   5 => 'Mei',      6 => 'Juni',
+        7 => 'Juli',    8 => 'Agustus',  9 => 'September',
+        10 => 'Oktober',11 => 'November',12 => 'Desember'
+    ];
+
+
+    $availableYears = DB::table('activities')
+    ->selectRaw('YEAR(created_at) as year')
+    ->distinct()
+    ->orderByRaw('YEAR(created_at)')
+    ->pluck('year');
+
+    return view('pegawai.rekap', compact('bulanAktivitas', 'monthNames','availableYears'));
+}
+
+public function ExcelRecap(Request $request){
+            $month = $request->month;
+
+            $activities = Activities::where('created_by', Auth::user()->nip)->whereMonth('created_at', $month)->get();
+            // $activities = Activity::whereMonth('created_at', $request->month)->get();
+
+    
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+    
+            $sheet->setCellValue('A1', 'No');
+            $sheet->setCellValue('B1', 'Nama Aktivitas');
+            $sheet->setCellValue('C1', 'Deskripsi');
+            $sheet->setCellValue('D1', 'Tanggal');
+    
+            $rowNumber = 2; 
+            $no = 1;
+            foreach ($activities as $activity) {
+                $sheet->setCellValue('A' . $rowNumber, $no++);
+                $sheet->setCellValue('B' . $rowNumber, $activity->activity);
+                $sheet->setCellValue('C' . $rowNumber, $activity->description);
+                $sheet->setCellValue('D' . $rowNumber, $activity->created_at->format('Y-m-d H:i:s'));
+    
+                $rowNumber++;
+            }
+    
+            $writer = new Xlsx($spreadsheet);
+    
+            $fileName = 'rekap_aktivitas.xlsx';
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header("Content-Disposition: attachment; filename=\"{$fileName}\"");
+            header('Cache-Control: max-age=0');
+    
+            $writer->save('php://output');
+            exit; 
+
+}
+
+    
 
 }
 

@@ -67,7 +67,8 @@ Route::middleware('auth','verified')->group(function () {
     Route::put('/skp/update/{id}', [AtasanController::class, 'updateSKP'])->name('atasan.updateSKP');
     Route::put('/skp/delete/{id}', [AtasanController::class, 'softDeleteSKP'])->name('atasan.softDeleteSKP');
     Route::get('/skp-filter', [AtasanController::class, 'filterSKP'])->name('atasan.filterSKP');
-    Route::get('/rekap', [AtasanController::class, 'recapActivity'])->name('atasan.recapActivity');
+    Route::get('/rekap', [AtasanController::class, 'listRecap'])->name('atasan.listRecap');
+    Route::get('/rekap/excel/{month}', [AtasanController::class, 'ExcelRecap'])->name('atasan.ExcelRecap');
 });
 });
 
