@@ -141,16 +141,16 @@
       </thead>
 
       <tbody>
-        <tr>
         @foreach ($last_activity as $item => $row)
+        <tr>
           <td>{{ $item+1 }}</td>
           <td>{{ $row->TANGGAL }}</td>
           <td>{{ $row->NIP }}</td>
           <td>{{ $row->NAMA_PEGAWAI }}</td>
           <td>{{ $row->ACTIVITY}}</td>
           <td>{{ $row->DESCRIPTION }}</td>
-          @endforeach
         </tr>
+        @endforeach
       </tbody>
     </table>
   </div>

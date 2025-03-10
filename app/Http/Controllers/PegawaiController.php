@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class PegawaiController extends Controller
 {
@@ -31,8 +33,27 @@ class PegawaiController extends Controller
         return view('dashboard', compact('get_bawahan','get_activities','get_activities_delay','get_activities_approve'));
     }
 
-    public function listSKP(){
-        $skp = SKP::whereNull('is_deleted')->get();
+    public function listSKP(Request $request){
+        $user = Auth::user();
+        // if($request->input()){
+        //     $year = $request->input('year');
+        //     $query = SKP::whereNull('is_deleted')->where('created_by', $user->nip);
+        //     if ($year != 'all') {
+        //         $skp = $query->where('year', $year)->get();
+        //     }
+        //     else{
+        //         $skp = $query->get();
+        //     }   
+        // }
+        //     $skp = SKP::whereNull('is_deleted')->where('created_by', $user->nip)->get();
+
+        $query = SKP::query();
+        if ($request->has('year') && $request->year != '') {
+            $query->where('year', $request->year);
+        }
+
+        $skp = $query->whereNull('is_deleted')->where('created_by', $user->nip)->get();
+
         $monthNames = [
             1 => 'Januari',
             2 => 'Februari',
@@ -47,7 +68,13 @@ class PegawaiController extends Controller
             11 => 'November',
             12 => 'Desember',
         ];
-        return view('pegawai/skp', compact('skp','monthNames'));
+
+        $availableYears = DB::table('skp')
+        // ->selectRaw('YEAR(created_at) as year')
+        ->distinct()
+        // ->orderByRaw('YEAR(created_at)')
+        ->pluck('year');
+        return view('pegawai/skp', compact('skp','monthNames','availableYears'));
     }
 
     
@@ -62,7 +89,10 @@ class PegawaiController extends Controller
             return response()->json($validator->errors(), 422);
         }
         
-        $employee = Employees::findorFail(Auth::user()->id);
+        $employee = Employees::where('nip',Auth::user()->nip)->first();
+        if (!$employee) {
+            return redirect()->back()->with('error' ,'Data kepegawaian anda tidak ada!');
+            }
         $time_now = Carbon::now();
         $checkSKP = SKP::
         where('month', $request->month)
@@ -104,16 +134,19 @@ class PegawaiController extends Controller
         
        $skp =  SKP::findOrFail($id);
 
-       $employee = Employees::where('nip', Auth::user()->nip)->first();
-       $checkSKP = SKP::
-       where('month', $request->month)
-       ->where('year', $request->year)
-       ->where('created_by', $employee->nip)
-       ->first();
+    //    $employee = Employees::where('nip', Auth::user()->nip)->first();
+    //    if (!$employee) {
+    //     return redirect()->back()->with('error' ,'Data kepegawaian anda tidak ada!');
+    //     }
+    //    $checkSKP = SKP::
+    //    where('month', $request->month)
+    //    ->where('year', $request->year)
+    //    ->where('created_by', $employee->nip)
+    //    ->first();
 
-       if ($checkSKP) {
-           return redirect()->back()->with('error' ,'Sudah ada SKP di bulan dan tahun tersebut!');
-       }
+    //    if ($checkSKP) {
+    //        return redirect()->back()->with('error' ,'Sudah ada SKP di bulan dan tahun tersebut!');
+    //    }
        
        $skp->update([
             'name_skp' => $request->name_skp,
@@ -166,7 +199,10 @@ class PegawaiController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
         
-        $employee = Employees::findorFail(Auth::user()->id);
+        $employee = Employees::where('nip',Auth::user()->nip)->first();
+        if (!$employee) {
+            return redirect()->back()->with('error' ,'Data kepegawaian anda tidak ada!');
+            }
         // $time_now = Carbon::now();
         // $checkActivity = SKP::where('employee_id', $employee->id)
         // ->where('created_at', $request->created_at)
@@ -253,8 +289,75 @@ class PegawaiController extends Controller
     }
 
 
-    public function recapActivity(){
-        return view('pegawai.rekap');
+  
+    public function listRecap(Request $request){
+        
+        $year = $request->input('year');
+    
+    
+        $query = Activities::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+        ->groupByRaw('MONTH(created_at)')
+        ->orderByRaw('MONTH(created_at)');
+    
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+    
+        $bulanAktivitas = $query->get();
+    
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+            4 => 'April',   5 => 'Mei',      6 => 'Juni',
+            7 => 'Juli',    8 => 'Agustus',  9 => 'September',
+            10 => 'Oktober',11 => 'November',12 => 'Desember'
+        ];
+    
+    
+        $availableYears = DB::table('activities')
+        ->selectRaw('YEAR(created_at) as year')
+        ->distinct()
+        ->orderByRaw('YEAR(created_at)')
+        ->pluck('year');
+    
+        return view('pegawai.rekap', compact('bulanAktivitas', 'monthNames','availableYears'));
+    }
+    
+    public function ExcelRecap(Request $request){
+                $month = $request->month;
+    
+                $activities = Activities::where('created_by', Auth::user()->nip)->whereMonth('created_at', $month)->get();
+                // $activities = Activity::whereMonth('created_at', $request->month)->get();
+    
+        
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+        
+                $sheet->setCellValue('A1', 'No');
+                $sheet->setCellValue('B1', 'Nama Aktivitas');
+                $sheet->setCellValue('C1', 'Deskripsi');
+                $sheet->setCellValue('D1', 'Tanggal');
+        
+                $rowNumber = 2; 
+                $no = 1;
+                foreach ($activities as $activity) {
+                    $sheet->setCellValue('A' . $rowNumber, $no++);
+                    $sheet->setCellValue('B' . $rowNumber, $activity->activity);
+                    $sheet->setCellValue('C' . $rowNumber, $activity->description);
+                    $sheet->setCellValue('D' . $rowNumber, $activity->created_at->format('Y-m-d H:i:s'));
+        
+                    $rowNumber++;
+                }
+        
+                $writer = new Xlsx($spreadsheet);
+        
+                $fileName = 'rekap_aktivitas.xlsx';
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header("Content-Disposition: attachment; filename=\"{$fileName}\"");
+                header('Cache-Control: max-age=0');
+        
+                $writer->save('php://output');
+                exit; 
+    
     }
 
 

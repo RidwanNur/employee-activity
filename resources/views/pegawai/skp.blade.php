@@ -17,7 +17,7 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <div class="d-flex align-items-center">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                   <h4 class="card-title">Daftar SKP</h4>
                   <button class="btn btn-primary btn-round ms-auto" data-bs-toggle="modal"
                     data-bs-target="#addSKPModal">
@@ -26,6 +26,18 @@
                   </button>
                 </div>
               </div>
+              <div class="col-md-4">
+                <div class="card">
+                  <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-center mb-3">
+                          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                              <i class="fas fa-filter"></i> Filter
+                          </button>
+                      </div>
+                  </div>
+                </div>
+              </div>
+                
               <div class="card-body">
 
                 @role('atasan')
@@ -391,6 +403,62 @@
                 </div>
                 <!-- End Tabel SKP -->
                 @endrole
+                <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="filterModalLabel">Filter</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          @role('atasan')
+                          <form action="{{ route('atasan.listSKP') }}" method="GET">
+                              <div class="modal-body">
+                                  <div class="mb-3">
+                                      <label for="tahun" class="form-label">Tahun</label>
+                                      <select name="year" id="year" class="form-select">
+                                          <option value="">Pilih Tahun</option>
+                                          <option value="all">Semua</option>
+                                          @foreach($availableYears as $yr)
+                                            <option value="{{ $yr }}" 
+                                              {{ request('year') == $yr ? 'selected' : '' }}>
+                                              {{ $yr }}
+                                            </option>
+                                          @endforeach
+                                        </select>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="reset" class="btn btn-secondary">Reset</button>
+                                  <button type="submit" class="btn btn-primary">Terapkan</button>
+                              </div>
+                          </form>
+                          @endrole
+                          @role('pegawai')
+                          <form action="{{ route('pegawai.listSKP') }}" method="GET">
+                              <div class="modal-body">
+                                  <div class="mb-3">
+                                      <label for="tahun" class="form-label">Tahun</label>
+                                      <select name="year" id="year" class="form-select">
+                                          <option value="">Pilih Tahun</option>
+                                          <option value="all">Semua</option>
+                                          @foreach($availableYears as $yr)
+                                            <option value="{{ $yr }}" 
+                                              {{ request('year') == $yr ? 'selected' : '' }}>
+                                              {{ $yr }}
+                                            </option>
+                                          @endforeach
+                                        </select>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="reset" class="btn btn-secondary">Reset</button>
+                                  <button type="submit" class="btn btn-primary">Terapkan</button>
+                              </div>
+                          </form>
+                          @endrole
+                      </div>
+                  </div>
+              </div>
               </div>
             </div>
           </div>
