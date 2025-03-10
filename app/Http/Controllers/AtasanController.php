@@ -50,9 +50,27 @@ class AtasanController extends Controller
         
     }
 
-    public function listSKP(){
+    public function listSKP(Request $request){
         $user = Auth::user();
-        $skp = SKP::whereNull('is_deleted')->where('created_by', $user->nip)->get();
+        // if($request->input()){
+        //     $year = $request->input('year');
+        //     $query = SKP::whereNull('is_deleted')->where('created_by', $user->nip);
+        //     if ($year != 'all') {
+        //         $skp = $query->where('year', $year)->get();
+        //     }
+        //     else{
+        //         $skp = $query->get();
+        //     }   
+        // }
+        //     $skp = SKP::whereNull('is_deleted')->where('created_by', $user->nip)->get();
+
+        $query = SKP::query();
+        if ($request->has('year') && $request->year != '') {
+            $query->where('year', $request->year);
+        }
+
+        $skp = $query->whereNull('is_deleted')->where('created_by', $user->nip)->get();
+
         $monthNames = [
             1 => 'Januari',
             2 => 'Februari',
@@ -67,7 +85,13 @@ class AtasanController extends Controller
             11 => 'November',
             12 => 'Desember',
         ];
-        return view('pegawai/skp', compact('skp','monthNames'));   
+
+        $availableYears = DB::table('skp')
+        // ->selectRaw('YEAR(created_at) as year')
+        ->distinct()
+        // ->orderByRaw('YEAR(created_at)')
+        ->pluck('year');
+        return view('pegawai/skp', compact('skp','monthNames','availableYears'));
     }
 
     
