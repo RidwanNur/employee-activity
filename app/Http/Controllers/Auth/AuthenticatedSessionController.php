@@ -45,13 +45,13 @@ class AuthenticatedSessionController extends Controller
                 if ($user->status == 1) {
                     if ($user->hasRole('admin')) {
                         Auth::login($user);
-                        return redirect()->route('dashboard');
+                        return redirect()->route('dashboard')->with('success','Welcome back! '.$user->username);
                     } elseif ($user->hasRole('atasan') && $user->is_atasan == 1) {
                         Auth::login($user);
-                        return redirect()->route('atasan.dashboard');
+                        return redirect()->route('atasan.dashboard')->with('success','Welcome back! '.$user->username);
                     } elseif ($user->hasRole('pegawai')) {
                         Auth::login($user);
-                        return redirect()->route('pegawai.dashboard');
+                        return redirect()->route('pegawai.dashboard')->with('success','Welcome back! '.$user->username);
                     } 
                 }
                 Auth::logout();
