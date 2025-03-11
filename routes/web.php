@@ -27,7 +27,8 @@ Route::middleware('auth','verified')->group(function () {
     Route::post('/pegawai/create', [AdminController::class, 'storeEmployee'])->name('admin.storeEmployee');
     Route::post('/pegawai/update/{id}', [AdminController::class, 'updateEmployee'])->name('admin.updateEmployee');
     Route::post('/pegawai/delete/{id}', [AdminController::class, 'softDeleteEmployee'])->name('admin.softDeleteEmployee');
-    Route::post('/rekap', [AdminController::class, 'recapActivity'])->name('admin.recapActivity');
+    Route::get('/rekap', [AdminController::class, 'listRecap'])->name('admin.listRecap');
+    Route::get('/rekap/excel/{month}', [AdminController::class, 'ExcelRecap'])->name('admin.ExcelRecap');
 
 });
 });
@@ -38,15 +39,16 @@ Route::middleware('auth','verified')->group(function () {
     Route::get('/dashboard', [PegawaiController::class, 'index'])->name('pegawai.dashboard');
     Route::get('/aktivitas', [PegawaiController::class, 'listActivity'])->name('pegawai.listActivity');
     Route::post('/aktivitas/create', [PegawaiController::class, 'storeActivity'])->name('pegawai.storeActivity');
-    Route::post('/aktivitas/update/{id}', [PegawaiController::class, 'updateActivity'])->name('pegawai.updateActivity');
+    Route::put('/aktivitas/update/{id}', [PegawaiController::class, 'updateActivity'])->name('pegawai.updateActivity');
     Route::put('/aktivitas/delete/{id}', [PegawaiController::class, 'softDeleteActivity'])->name('pegawai.softDeleteActivity');
     Route::get('/aktivitas/filter', [PegawaiController::class, 'storeActivity'])->name('pegawai.filterActivity');
-    Route::get('/skp', [PegawaiController::class, 'listSKP'])->name('atasan.listSKP');
+    Route::get('/skp', [PegawaiController::class, 'listSKP'])->name('pegawai.listSKP');
     Route::post('/skp/create', [PegawaiController::class, 'storeSKP'])->name('pegawai.storeSKP');
     Route::put('/skp/update/{id}', [PegawaiController::class, 'updateSKP'])->name('pegawai.updateSKP');
     Route::put('/skp/delete/{id}', [PegawaiController::class, 'softDeleteSKP'])->name('pegawai.softDeleteSKP');
     Route::get('/skp/filter', [PegawaiController::class, 'filterSKP'])->name('pegawai.filterSKP');
-    Route::get('/rekap', [PegawaiController::class, 'recapActivity'])->name('pegawai.recapActivity');
+    Route::get('/rekap', [PegawaiController::class, 'listRecap'])->name('pegawai.listRecap');
+    Route::get('/rekap/excel/{month}', [PegawaiController::class, 'ExcelRecap'])->name('pegawai.ExcelRecap');
 });
 });
 
