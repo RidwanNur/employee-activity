@@ -7,10 +7,10 @@
     <div class="page-inner">
       <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
         <div>
-          <h3 class="fw-bold mb-3">Aktivitas</h3>
+          <h3 class="fw-bold mb-3">Approval Aktivitas</h3>
         </div>
         <div class="ms-md-auto py-2 py-md-0">
-          <label>{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, j F Y') }}</label>
+          <label>Senin, 10 Maret 2025</label>
         </div>
       </div>
 
@@ -20,11 +20,11 @@
             <div class="card">
               <div class="card-header">
                 <div class="d-flex align-items-center">
-                  <button class="btn btn-primary btn-round ms-auto" data-bs-toggle="modal"
+                  {{-- <button class="btn btn-primary btn-round ms-auto" data-bs-toggle="modal"
                     data-bs-target="#addRowModal">
                     <i class="fa fa-plus"></i>
                     Tambah Aktivitas
-                  </button>
+                  </button> --}}
                 </div>
               </div>
               <div class="card-body">
@@ -103,80 +103,6 @@
                 @endrole
                 <!-- End Modal -->
 
-                @role('pegawai')
-                <!-- Modal Tambah Aktivitas -->
-                <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header border-0">
-                        <h5 class="modal-title">
-                          <span class="fw-mediumbold"> Tambah</span>
-                          <span class="fw-light"> Aktivitas </span>
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" action="close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        <form action="{{ route('pegawai.storeActivity') }}" method="POST">
-                            @csrf
-                          <div class="row">
-                            <div class="col-md-6">
-                              <div class="form-group">
-                                <label>Jam Mulai</label>
-                                <input id="addPosition" name="start_time" type="time" class="form-control" placeholder="" />
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group">
-                                <label>Jam Selesai</label>
-                                <input id="addOffice" name="end_time" type="time" class="form-control" placeholder="" />
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group">
-                                <label>SKP Acuan</label>
-                                <select class="btn btn-light dropdown-toggle" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false" name="skp_id" id="skp_id">
-                                    <option value="" class="dropdown-item">Pilih SKP</option>
-                                    @foreach($skp as $item => $rowSkp)
-                                    <option value="{{ $rowSkp->id }}">
-                                      {{ $rowSkp->name_skp }}
-                                    </option>
-                                  @endforeach
-                                  </select>
-                              </div>
-                            </div>
-                            <div class="col-sm-12">
-                              <div class="form-group">
-                                <label for="">Aktivitas</label>
-                                <input id="activity" type="text" name="activity" class="form-control"
-                                  placeholder="Isi sesuai aktivitas anda" />
-                              </div>
-                            </div>
-                            <div class="col-sm-12">
-                              <div class="form-group">
-                                <label for="">Deskripsi</label>
-                                <textarea id="description" type="text" name="description" class="form-control"
-                                  placeholder="Isi sesuai aktivitas anda"></textarea>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="modal-footer border-0">
-                            <button type="submit"  class="btn btn-primary">
-                                Add
-                            </button>
-                            {{-- <button type="button" class="btn btn-danger" data-dismiss="modal" action="">
-                                Close
-                            </button> --}}
-                        </div>
-                    </form>
-                    </div>
-                  </div>
-                </div>
-                @endrole
-                <!-- End Modal -->
 
                 <!-- Tabel Aktivitas -->
                 @role('atasan')
@@ -190,8 +116,8 @@
                             <th>SKP</th>
                             <th>Aktivitas</th>
                             <th>Deskripsi</th>
-                            <th>Status Approval</th>
-                            <th style="width: 10%">Aksi</th>
+                            <th>Approval</th>
+                            <th style="width: 5%">Aksi</th>
                         </tr>
                     </thead>
                     
@@ -220,21 +146,12 @@
                                   class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
                                   <i class="fa fa-edit"></i>
                                 </button>
-                                <button type="button" data-bs-toggle="tooltip" title="" onclick="confirmDelete({{ $row->id }})"
-                                  class="btn btn-link btn-danger" data-original-title="Remove">
-                                  <i class="fa fa-times"></i>
-                                </button>
                                 @else
                                 <button type="button" 
                                  onclick="cannotEditWarning()"
                                   class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
                                   <i class="fa fa-edit"></i>
-                                </button>
-                                <button type="button" onclick="cannotEditWarning()"
-                                  class="btn btn-link btn-danger" data-original-title="Remove">
-                                  <i class="fa fa-times"></i>
-                                </button>
-                                
+                                </button>                    
                                 @endif
                             </div>
                         </td>
@@ -244,7 +161,7 @@
                             <div class="modal-content">
                             <div class="modal-header border-0">
                                 <h5 class="modal-title">
-                                <span class="fw-mediumbold">Edit</span>
+                                <span class="fw-mediumbold">View</span>
                                 <span class="fw-light">Aktivitas</span>
                                 </h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" action="close">
@@ -254,17 +171,55 @@
                             
                             <!-- Body Modal: Form Edit -->
                             <div class="modal-body">
-                                <form action="{{ route('atasan.updateActivity', $row->id) }}" method="POST">
+                                <form action="{{ route('atasan.ApproveActivity', $row->id) }}" method="POST">
                                 @csrf
                                 @method('PUT') 
                                 
                                 <div class="row">
+                                    @if ($row->status == null || $row->status == '')
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <input type="text" name="created_by" class="form-control"
+                                                value="Menunggu Approval" readonly/>
+                                        </div>
+                                    </div>
+                                    @else
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <input type="text" name="created_by" class="form-control"
+                                                value="Sudah Approve" readonly/>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>NIP</label>
+                                            <input type="text" name="created_by" class="form-control"
+                                                value="{{ $row->created_by }}" readonly/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>Nama</label>
+                                            <input type="text" name="created_name" class="form-control"
+                                                value="{{ $row->created_name }}" readonly/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>Tanggal Buat</label>
+                                            <input type="text" name="nip" class="form-control"
+                                                value="{{ date('d-m-Y', strtotime($row->created_at)); }}" readonly />
+                                        </div>
+                                    </div>
                                     <!-- Jam Mulai -->
                                     <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Jam Mulai</label>
                                         <input type="time" name="start_time" class="form-control"
-                                            value="{{ $row->start_time }}" />
+                                            value="{{ $row->start_time }}" readonly/>
                                     </div>
                                     </div>
                                     <!-- Jam Selesai -->
@@ -272,7 +227,7 @@
                                     <div class="form-group">
                                         <label>Jam Selesai</label>
                                         <input type="time" name="end_time" class="form-control"
-                                            value="{{ $row->end_time }}" />
+                                            value="{{ $row->end_time }}" readonly/>
                                     </div>
                                     </div>
                                     
@@ -280,7 +235,7 @@
                                     <div class="col-md-6">
                                     <div class="form-group">
                                         <label>SKP Acuan</label>
-                                        <select name="skp_id" class="btn btn-light dropdown-toggle">
+                                        <select name="skp_id" class="btn btn-light dropdown-toggle" disabled>
                                         <option value="">Pilih SKP</option>
                                         @foreach($skp as $skpRow)
                                             <option value="{{ $skpRow->id }}"
@@ -297,7 +252,7 @@
                                     <div class="form-group">
                                         <label>Aktivitas</label>
                                         <input type="text" name="activity" class="form-control"
-                                            value="{{ $row->activity }}" />
+                                            value="{{ $row->activity }}" readonly/>
                                     </div>
                                     </div>
                                     
@@ -306,7 +261,7 @@
                                     <div class="form-group">
                                         <label>Deskripsi</label>
                                         <textarea name="description" class="form-control"
-                                        placeholder="Isi sesuai aktivitas anda">{{ $row->description }}</textarea>
+                                        placeholder="Isi sesuai aktivitas anda" readonly>{{ $row->description }}</textarea>
                                     </div>
                                     </div>
                                 </div>
@@ -314,12 +269,13 @@
 
                                 <!-- Footer Modal -->
                                 <div class="modal-footer border-0">
-                                    <button type="submit" class="btn btn-primary">
-                                    Save
-                                    </button>
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">
-                                    Close
+                                        Close
+                                        </button>
+                                    <button type="submit" class="btn btn-primary">
+                                    Approve
                                     </button>
+                                    
                                 </div>
                                 </form>
                                 <form id="form-delete-{{ $row->id }}" 
@@ -328,7 +284,6 @@
                                     style="display: none;">
                                 @csrf
                                 @method('PUT')
-                                </form>
                             </div> <!-- modal-body -->
                             </div> <!-- modal-content -->
                         </div> <!-- modal-dialog -->
@@ -490,7 +445,6 @@
                                                     style="display: none;">
                                                 @csrf
                                                 @method('PUT')
-                                                </form>
                                             </div> <!-- modal-body -->
                                             </div> <!-- modal-content -->
                                         </div> <!-- modal-dialog -->
@@ -562,8 +516,8 @@
     function cannotEditWarning() {
       Swal.fire({
         icon: 'warning',
-        title: 'Tidak Dapat Diedit / Dihapus',
-        text: 'Data ini sudah disetujui, Anda tidak dapat mengeditnya/menghapusnya lagi.',
+        title: 'Sudah Approve',
+        text: 'Aktivitas ini sudah disetujui',
       });
     }
     

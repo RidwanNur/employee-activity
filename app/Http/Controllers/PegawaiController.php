@@ -18,13 +18,13 @@ class PegawaiController extends Controller
     public function index () {
         $user = Auth::user();
         if($user->is_atasan == 1){
-            $query_get_bawahan = "SELECT COUNT(*) AS TOTAL FROM EMPLOYEES WHERE NIP_ATASAN = '{$user->nip}'";
+            $query_get_bawahan = "SELECT COUNT(*) AS TOTAL FROM employees WHERE NIP_ATASAN = '{$user->nip}'";
         }else {
             $query_get_bawahan = "SELECT 0 AS TOTAL";
         }
-        $query_activities = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}'";
-        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}' AND STATUS IS NOT NULL";
-        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID WHERE EMPLOYEES.NIP = '{$user->nip}' AND STATUS IS NULL";
+        $query_activities = "SELECT COUNT(*) AS TOTAL FROM activities LEFT OUTER JOIN employees ON activities.EMPLOYEE_ID = employees.ID WHERE employees.NIP = '{$user->nip}'";
+        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM activities LEFT OUTER JOIN employees ON activities.EMPLOYEE_ID = employees.ID WHERE employees.NIP = '{$user->nip}' AND STATUS IS NOT NULL";
+        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM activities LEFT OUTER JOIN employees ON activities.EMPLOYEE_ID = employees.ID WHERE employees.NIP = '{$user->nip}' AND STATUS IS NULL";
 
         $get_bawahan = DB::select($query_get_bawahan);
         $get_activities = DB::select($query_activities);

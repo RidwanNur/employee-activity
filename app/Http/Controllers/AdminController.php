@@ -10,6 +10,7 @@ use App\Models\Activities;
 use App\Models\Work_Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -19,10 +20,10 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class AdminController extends Controller
 {
     public function index () {
-        $employee = "SELECT COUNT(*) AS TOTAL FROM EMPLOYEES";
-        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE STATUS IS NOT NULL";
-        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE STATUS IS NULL";
-        $query_last_activity = "SELECT ACTIVITIES.CREATED_AT AS TANGGAL, EMPLOYEES.NIP, ACTIVITIES.CREATED_NAME AS NAMA_PEGAWAI, ACTIVITIES.ACTIVITY, ACTIVITIES.DESCRIPTION FROM ACTIVITIES LEFT OUTER JOIN EMPLOYEES ON ACTIVITIES.EMPLOYEE_ID = EMPLOYEES.ID ORDER BY ACTIVITIES.CREATED_AT DESC LIMIT 5";
+        $employee = "SELECT COUNT(*) AS TOTAL FROM employees"; 
+        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM activities WHERE STATUS IS NOT NULL";
+        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM activities WHERE STATUS IS NULL";
+        $query_last_activity = "SELECT activities.CREATED_AT AS TANGGAL, employees.NIP, activities.CREATED_NAME AS NAMA_PEGAWAI, activities.ACTIVITY, activities.DESCRIPTION FROM activities LEFT OUTER JOIN employees ON activities.EMPLOYEE_ID = employees.ID ORDER BY activities.CREATED_AT DESC LIMIT 5";
 
 
         $total_employee = DB::select($employee);
@@ -36,7 +37,8 @@ class AdminController extends Controller
     public function listEmployee (){
             $employees = Employees::whereNull('is_deleted')->get();
             $workRegion = Work_Region::all();
-            return view('', compact('employees', 'workRegion'));   
+            $atasan = Employees::whereNotNull('region')->whereNull('is_deleted')->get();
+            return view('admin.pegawai', compact('employees', 'workRegion','atasan'));   
         
     }
 
@@ -47,8 +49,7 @@ class AdminController extends Controller
             'name' => 'required',
             'region' => 'required',
             'position' => 'required',
-            'nip_atasan' => 'nip_atasan',
-            'nama_atasan' => 'nama_atasan'
+            'nip_atasan' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -64,22 +65,16 @@ class AdminController extends Controller
             ], 409);
         }
 
-
-       $employee =  Employees::create([
-            'nip' => $request->nip,
-            'name' => $request->name,
-            'region' => $request->region,
-            'position' => $request->position,
-            'nip_atasan' => $request->nip_atasan,
-            'nama_atasan' => $request->nama_atasan,
-            'created_at' => Carbon::now,
-        ]);
+        $atasanName = Employees::where('nip', $request->nip_atasan)->first();
 
         $user = User::create([
-            'name' => $request->name,
+            'username' => $request->name,
             'nip' => $request->nip,
-            'password' => Hash::make('123456')
+            'password' => Hash::make('123456'),
+            'status' => 1,
+            'created_at' => Carbon::now(),
         ]);
+
         $user->assignRole('pegawai');
 
         $atasan = User::where('nip', $request->nip_atasan)->first();
@@ -87,11 +82,22 @@ class AdminController extends Controller
             $atasan->syncRoles(['atasan']);
             $atasan->update([
                 'is_atasan' => 1,
-                'updated_at' => Carbon::now,
+                'updated_at' => Carbon::now(),
             ]);
         }
+       Employees::create([
+            'user_id' => $user->id,
+            'nip' => $request->nip,
+            'name' => $request->name,
+            'region' => $request->region,
+            'position' => $request->position,
+            'nip_atasan' => $request->nip_atasan,
+            'nama_atasan' => $atasanName->name,
+            'created_at' => Carbon::now(),
+        ]);
 
-        return redirect()->back()->with(['message' => 'Record inserted successfully.', 'data' => $employee]);
+
+        return redirect()->back()->with('success' ,'Record inserted successfully.');
 
     }
 
@@ -101,7 +107,7 @@ class AdminController extends Controller
             'is_deleted' => 1,
         ]);
 
-        return redirect()->back()->with(['message' => 'Record deleted successfully.', 'data' => $employee]);
+        return redirect()->back()->with('success' ,'Record deleted successfully.');
     }  
 
     public function updateEmployee(Request $request, $id){
@@ -110,28 +116,26 @@ class AdminController extends Controller
             'nip' => 'required|numeric',
             'name' => 'required',
             'region' => 'required',
-            'nip_atasan' => 'nip_atasan',
-            'nama_atasan' => 'nama_atasan',
+            'nip_atasan' => 'required',
             'position' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-
         $employee = Employees::findOrFail($id);
-
+        $atasanName = Employees::where('nip', $request->nip_atasan)->first();
         $employee->update([
             'nip' => $request->nip,
             'name' => $request->name,
             'region' => $request->region,
             'position' => $request->position,
             'nip_atasan' => $request->nip_atasan,
-            'nama_atasan' => $request->nama_atasan,
-            'created_at' => Carbon::now,
+            'nama_atasan' => $atasanName->name,
+            'created_at' => Carbon::now(),
         ]);
 
-        $user = User::where('nip', $employee->nip)->first();
+        $user = User::where('nip', $employee->nip)->OrWhere('id', $employee->user_id)->first();
         $user->update([
             'name' => $request->name,
             'nip' => $request->nip,
@@ -142,11 +146,11 @@ class AdminController extends Controller
             $atasan->syncRoles(['atasan']);
             $atasan->update([
                 'is_atasan' => 1,
-                'updated_at' => Carbon::now,
+                'updated_at' => Carbon::now(),
             ]);
         }
 
-        return redirect()->back()->with(['message' => 'Record updated successfully.', 'data' => $employee]);
+        return redirect()->back()->with('success' ,'Record updated successfully.');
 
     }
 

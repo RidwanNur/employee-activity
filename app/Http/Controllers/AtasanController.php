@@ -19,13 +19,13 @@ class AtasanController extends Controller
     public function index (){
         $user = Auth::user();
         if($user->is_atasan == 1){
-            $query_get_bawahan = "SELECT COUNT(*) AS TOTAL FROM EMPLOYEES WHERE NIP_ATASAN = '{$user->nip}'";
+            $query_get_bawahan = "SELECT COUNT(*) AS TOTAL FROM employees WHERE NIP_ATASAN = '{$user->nip}'";
         }else {
             $query_get_bawahan = "SELECT 0 AS TOTAL";
         }
-        $query_activities = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE NIP_ATASAN = '{$user->nip}'";
-        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE NIP_ATASAN = '{$user->nip}' AND STATUS IS NOT NULL";
-        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM ACTIVITIES WHERE NIP_ATASAN = '{$user->nip}' AND STATUS IS NULL";
+        $query_activities = "SELECT COUNT(*) AS TOTAL FROM activities WHERE NIP_ATASAN = '{$user->nip}'";
+        $query_activities_approve = "SELECT COUNT(*) AS TOTAL FROM activities WHERE NIP_ATASAN = '{$user->nip}' AND STATUS IS NOT NULL";
+        $query_activities_delay = "SELECT COUNT(*) AS TOTAL FROM activities WHERE NIP_ATASAN = '{$user->nip}' AND STATUS IS NULL";
 
         $bawahan = DB::select($query_get_bawahan);
         $atasan_activity = DB::select($query_activities);
@@ -35,7 +35,9 @@ class AtasanController extends Controller
     }
 
     public function listApproval(){
-
+        $activities = Activities::whereNull('is_deleted')->where('nip_atasan', Auth::user()->nip)->with('skp')->get();
+        $skp = SKP::whereNull('is_deleted')->where('created_by', Auth::user()->nip)->get();
+        return view('atasan.approval-activity', compact('activities', 'skp'));
     }
 
     public function filterListApprActivity(){
@@ -46,7 +48,17 @@ class AtasanController extends Controller
 
     }
 
-    public function ApproveActivity(){
+    public function ApproveActivity(Request $request, $id){
+                
+        $activities = Activities::findOrFail($id);
+
+       $activities->update([
+            'status' => 1,
+            'updated_at' => Carbon::now()
+        ]);
+
+
+        return redirect()->back()->with('success' ,'Sukses Approve Aktivitas');
         
     }
 

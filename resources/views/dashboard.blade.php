@@ -158,6 +158,19 @@
 @endsection
 
 @push('scripts')
+@if (session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Login Berhasil',
+        text: '{{ session('success') }}',
+        timer: 5000,
+        width: 850,
+        padding: '2em',
+        showConfirmButton: false
+    })
+</script>
+@endif
 <script>
     $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
       type: "line",
