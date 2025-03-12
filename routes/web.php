@@ -23,10 +23,10 @@ Route::get('/', function () {
 Route::middleware('auth','verified')->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    Route::post('/pegawai', [AdminController::class, 'listEmployee'])->name('admin.listEmployee');
+    Route::get('/pegawai', [AdminController::class, 'listEmployee'])->name('admin.listEmployee');
     Route::post('/pegawai/create', [AdminController::class, 'storeEmployee'])->name('admin.storeEmployee');
-    Route::post('/pegawai/update/{id}', [AdminController::class, 'updateEmployee'])->name('admin.updateEmployee');
-    Route::post('/pegawai/delete/{id}', [AdminController::class, 'softDeleteEmployee'])->name('admin.softDeleteEmployee');
+    Route::put('/pegawai/update/{id}', [AdminController::class, 'updateEmployee'])->name('admin.updateEmployee');
+    Route::put('/pegawai/delete/{id}', [AdminController::class, 'softDeleteEmployee'])->name('admin.softDeleteEmployee');
     Route::get('/rekap', [AdminController::class, 'listRecap'])->name('admin.listRecap');
     Route::get('/rekap/excel/{month}', [AdminController::class, 'ExcelRecap'])->name('admin.ExcelRecap');
 
@@ -58,7 +58,7 @@ Route::middleware('auth','verified')->group(function () {
     Route::get('/approval', [AtasanController::class, 'listApproval'])->name('atasan.listApproval');
     Route::get('/approval-filter', [AtasanController::class, 'filterListApprActivity'])->name('atasan.filterListApprActivity');
     Route::get('/approval/view', [AtasanController::class, 'viewOneActivity'])->name('atasan.viewOneActivity');
-    Route::post('/approval/approve', [AtasanController::class, 'ApproveActivity'])->name('atasan.ApproveActivity');
+    Route::put('/approval/approve/{id}', [AtasanController::class, 'ApproveActivity'])->name('atasan.ApproveActivity');
     Route::get('/aktivitas', [AtasanController::class, 'listActivity'])->name('atasan.listActivity');
     Route::post('/aktivitas/create', [AtasanController::class, 'storeActivity'])->name('atasan.storeActivity');
     Route::put('/aktivitas/update/{id}', [AtasanController::class, 'updateActivity'])->name('atasan.updateActivity');
