@@ -8,7 +8,7 @@
           <h3 class="fw-bold mb-3">SKP</h3>
         </div>
         <div class="ms-md-auto py-2 py-md-0">
-          <label>Senin, 10 Maret 2025</label>
+          <label>{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, j F Y') }}</label>
         </div>
       </div>
 
@@ -81,8 +81,11 @@
                                   <select class="btn btn-light dropdown-toggle" type="button"
                                     data-bs-toggle="dropdown" aria-expanded="false" name="year" id="year">
                                     <option value="" class="dropdown-item">Pilih Tahun</option>
-                                    <option value="2025" class="dropdown-item">2025</option>
-                                    <option value="2026" class="dropdown-item">2026</option>
+                                    @for ($year = date('Y'); $year > date('Y') - 10; $year--)
+                                    <option value="{{$year}}">
+                                            {{$year}}
+                                    </option>
+                                    @endfor
                                   </select>
                                 </div>
                               </div>
@@ -248,10 +251,14 @@
                                 <label for="editYear{{ $row->id }}" class="form-label">Tahun</label>
                                 <select name="year" id="editYear{{ $row->id }}" class="form-select">
                                 <option value="">Pilih Tahun</option>
-                                <!-- Contoh statis: 2025, 2026, 2027 -->
-                                <option value="2025" {{ $row->year == 2025 ? 'selected' : '' }}>2025</option>
+                                @for ($year = date('Y'); $year > date('Y') - 10; $year--)
+                                <option value="{{$year}}" {{ $row->year == $year ? 'selected' : '' }}>
+                                        {{$year}}
+                                </option>
+                                @endfor
+                                {{-- <option value="2025" {{ $row->year == 2025 ? 'selected' : '' }}>2025</option>
                                 <option value="2026" {{ $row->year == 2026 ? 'selected' : '' }}>2026</option>
-                                <option value="2027" {{ $row->year == 2027 ? 'selected' : '' }}>2027</option>
+                                <option value="2027" {{ $row->year == 2027 ? 'selected' : '' }}>2027</option> --}}
                                 </select>
                             </div>
                             <div class="mb-3">

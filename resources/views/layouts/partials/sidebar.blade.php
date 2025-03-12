@@ -38,7 +38,7 @@
           @endif
           @if (Auth::user()->getRoleNames()[0] == 'atasan')   
           <li class="nav-item">
-            <a href="#">
+            <a href="{{ url(Auth::user()->getRoleNames()[0],'approval') }}">
               <i class="fas fa-pen-square"></i>
               <p>Approve Aktivitas</p>
             </a>
