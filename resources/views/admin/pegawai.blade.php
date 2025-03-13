@@ -186,7 +186,7 @@
                                       <div class="col-sm-12">
                                         <div class="form-group">
                                           <label>Wilayah Kerja</label>
-                                          <select id="addName" type="" name="region" class="form-select" placeholder="Sesuaikan SKP">
+                                          <select id="wilayah_kerja_edit" type="" name="region" class="form-select" placeholder="Sesuaikan SKP">
                                               <option selected>Pilih wilayah kerja pegawai</option>
                                               @foreach($workRegion as $item => $region)
                                               <option value="{{ $region->name }}" {{ $employee->region == $region->name ? 'selected' : '' }}>
@@ -199,7 +199,7 @@
                                       <div class="col-sm-12">
                                         <div class="form-group">
                                           <label>Nama Atasan</label>
-                                          <select id="addName" type="" name="nip_atasan" class="form-select" placeholder="Sesuaikan SKP">
+                                          <select id="atasan_edit" type="" name="nip_atasan" class="form-select" placeholder="Sesuaikan SKP">
                                             <option selected>Pilih atasan wilayah kerja</option>
                                             @foreach($atasan as $item => $atasanRegion)
                                             <option value="{{ $atasanRegion->nip }}" {{ $employee->nip_atasan == $atasanRegion->nip ? 'selected' : '' }}>
@@ -273,7 +273,7 @@
 
 <script>
     $(document).ready(function() {
-        $('#wilayah_kerja').on('change', function() {
+        $('#wilayah_kerja,#wilayah_kerja_edit').on('change', function() {
             var wilayah = $(this).val();
             if (wilayah) {
                 $.ajax({
@@ -281,16 +281,16 @@
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
-                        $('#atasan').empty();
-                        $('#atasan').append('<option value="">Pilih atasan wilayah kerja</option>');
+                        $('#atasan,#atasan_edit').empty();
+                        $('#atasan,#atasan_edit').append('<option value="">Pilih atasan wilayah kerja</option>');
                         $.each(data, function(id, nama) {
-                            $('#atasan').append('<option value="' + id + '">' + nama + '</option>');
+                            $('#atasan,#atasan_edit').append('<option value="' + id + '">' + nama + '</option>');
                         });
                     }
                 });
             } else {
-                $('#atasan').empty();
-                $('#atasan').append('<option value="">Pilih atasan wilayah kerja</option>');
+                $('#atasan,#atasan_edit').empty();
+                $('#atasan,#atasan_edit').append('<option value="">Pilih atasan wilayah kerja</option>');
             }
         });
     });
