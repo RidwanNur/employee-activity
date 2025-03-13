@@ -29,6 +29,7 @@ Route::middleware('auth','verified')->group(function () {
     Route::put('/pegawai/delete/{id}', [AdminController::class, 'softDeleteEmployee'])->name('admin.softDeleteEmployee');
     Route::get('/rekap', [AdminController::class, 'listRecap'])->name('admin.listRecap');
     Route::get('/rekap/excel/{month}', [AdminController::class, 'ExcelRecap'])->name('admin.ExcelRecap');
+    Route::get('/profile', [AdminController::class, 'profile'])->name('profile.view');
 
 });
 });
@@ -49,6 +50,7 @@ Route::middleware('auth','verified')->group(function () {
     Route::get('/skp/filter', [PegawaiController::class, 'filterSKP'])->name('pegawai.filterSKP');
     Route::get('/rekap', [PegawaiController::class, 'listRecap'])->name('pegawai.listRecap');
     Route::get('/rekap/excel/{month}', [PegawaiController::class, 'ExcelRecap'])->name('pegawai.ExcelRecap');
+    Route::get('/profile', [PegawaiController::class, 'profile'])->name('profile.view');
 });
 });
 
@@ -71,6 +73,7 @@ Route::middleware('auth','verified')->group(function () {
     Route::get('/skp-filter', [AtasanController::class, 'filterSKP'])->name('atasan.filterSKP');
     Route::get('/rekap', [AtasanController::class, 'listRecap'])->name('atasan.listRecap');
     Route::get('/rekap/excel/{month}', [AtasanController::class, 'ExcelRecap'])->name('atasan.ExcelRecap');
+    Route::get('/profile', [AtasanController::class, 'profile'])->name('profile.view');
 });
 });
 
