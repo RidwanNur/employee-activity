@@ -30,6 +30,7 @@ Route::middleware('auth','verified')->group(function () {
     Route::get('/rekap', [AdminController::class, 'listRecap'])->name('admin.listRecap');
     Route::get('/rekap/excel/{month}', [AdminController::class, 'ExcelRecap'])->name('admin.ExcelRecap');
     Route::get('/profile', [AdminController::class, 'profile'])->name('profile.view');
+    Route::get('/get-atasan/{wilayah}', [AdminController::class, 'getAtasan'])->name('admin.getAtasan');
 
 });
 });

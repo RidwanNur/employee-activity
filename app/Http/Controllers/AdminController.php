@@ -42,6 +42,15 @@ class AdminController extends Controller
         
     }
 
+    public function getAtasan($wilayah)
+{
+    $atasan = Employees::where('region', $wilayah)
+                      ->whereNotNull('position') // Pastikan hanya mengambil yang punya jabatan
+                      ->pluck('name', 'id'); // Ambil nama dan ID
+
+    return response()->json($atasan);
+}
+
     public function storeEmployee (Request $request){
         
         $validator = Validator::make($request->all(), [
