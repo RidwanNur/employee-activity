@@ -10,8 +10,8 @@ use App\Models\Activities;
 use App\Models\Work_Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -302,6 +302,11 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with(['message' => 'Record updated successfully.', 'data' => $approver]);
+    }
+
+    public function profile(){
+        $employees = Employees::where('nip', Auth::user()->nip)->first();
+        return view ('profile', compact('employees'));
     }
 
     public function getReportActivity(){
