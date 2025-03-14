@@ -283,8 +283,8 @@
                     success: function(data) {
                         $('#atasan,#atasan_edit').empty();
                         $('#atasan,#atasan_edit').append('<option value="">Pilih atasan wilayah kerja</option>');
-                        $.each(data, function(id, nama) {
-                            $('#atasan,#atasan_edit').append('<option value="' + id + '">' + nama + '</option>');
+                        $.each(data, function(nip, nama) {
+                            $('#atasan,#atasan_edit').append('<option value="' + nip + '">' + nama + '</option>');
                         });
                     }
                 });
