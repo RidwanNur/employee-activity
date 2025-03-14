@@ -70,7 +70,7 @@
                     <div class="u-text">
                       <h4>{{ Auth::user()->username }}</h4>
                       <p class="text-muted">{{ Auth::user()->nip }}</p>
-                      <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
+                      <a href="{{ url(Auth::user()->getRoleNames()[0],'profile') }}" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
                     </div>
                   </div>
                 </li>

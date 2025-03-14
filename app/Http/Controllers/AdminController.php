@@ -10,8 +10,8 @@ use App\Models\Activities;
 use App\Models\Work_Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -41,6 +41,15 @@ class AdminController extends Controller
             return view('admin.pegawai', compact('employees', 'workRegion','atasan'));   
         
     }
+
+        public function getAtasan($wilayah)
+        {
+            $atasan = Employees::where('region', $wilayah)
+                            ->whereNotNull('position') 
+                            ->pluck('name', 'nip'); 
+
+            return response()->json($atasan);
+        }
 
     public function storeEmployee (Request $request){
         
@@ -78,13 +87,14 @@ class AdminController extends Controller
         $user->assignRole('pegawai');
 
         $atasan = User::where('nip', $request->nip_atasan)->first();
-        if($atasan->hasRole('pegawai')){
+        if($atasan && $atasan->hasRole('pegawai')){
             $atasan->syncRoles(['atasan']);
             $atasan->update([
                 'is_atasan' => 1,
                 'updated_at' => Carbon::now(),
             ]);
         }
+        // return $atasan->getRoleNames();
        Employees::create([
             'user_id' => $user->id,
             'nip' => $request->nip,
@@ -302,6 +312,11 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with(['message' => 'Record updated successfully.', 'data' => $approver]);
+    }
+
+    public function profile(){
+        $employees = Employees::where('nip', Auth::user()->nip)->first();
+        return view ('profile', compact('employees'));
     }
 
     public function getReportActivity(){

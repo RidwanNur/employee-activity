@@ -360,6 +360,11 @@ class PegawaiController extends Controller
     
     }
 
+    public function profile(){
+        $employees = Employees::where('nip', Auth::user()->nip)->first();
+        return view ('profile', compact('employees'));
+    }
+
 
 
 }

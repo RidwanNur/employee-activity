@@ -70,7 +70,7 @@
                                 <div class="col-sm-12">
                                   <div class="form-group">
                                     <label>Wilayah Kerja</label>
-                                    <select id="addName" type="" name="region" class="form-select" placeholder="Sesuaikan SKP">
+                                    <select id="wilayah_kerja" type="" name="region" class="form-select" placeholder="Sesuaikan SKP">
                                         <option selected>Pilih wilayah kerja pegawai</option>
                                         @foreach($workRegion as $item => $region)
                                         <option value="{{ $region->name }}">
@@ -83,7 +83,7 @@
                                 <div class="col-sm-12">
                                   <div class="form-group">
                                     <label>Nama Atasan</label>
-                                    <select id="addName" type="" name="nip_atasan" class="form-select" placeholder="Sesuaikan SKP">
+                                    <select id="atasan" type="" name="nip_atasan" class="form-select" placeholder="Sesuaikan SKP">
                                       <option selected>Pilih atasan wilayah kerja</option>
                                       @foreach($atasan as $item => $atasanRegion)
                                       <option value="{{ $atasanRegion->nip }}">
@@ -139,10 +139,6 @@
                                     class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
                                     <i class="fa fa-edit"></i>
                                   </button>
-                                <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger"
-                                  data-original-title="Remove">
-                                  <i class="fa fa-times"></i>
-                                </button>
                                 <button type="button"  onclick="confirmDelete({{ $employee->id }})"
                                     class="btn btn-link btn-danger">
                                     <i class="fa fa-times"></i>
@@ -190,7 +186,7 @@
                                       <div class="col-sm-12">
                                         <div class="form-group">
                                           <label>Wilayah Kerja</label>
-                                          <select id="addName" type="" name="region" class="form-select" placeholder="Sesuaikan SKP">
+                                          <select id="wilayah_kerja_edit" type="" name="region" class="form-select" placeholder="Sesuaikan SKP">
                                               <option selected>Pilih wilayah kerja pegawai</option>
                                               @foreach($workRegion as $item => $region)
                                               <option value="{{ $region->name }}" {{ $employee->region == $region->name ? 'selected' : '' }}>
@@ -203,7 +199,7 @@
                                       <div class="col-sm-12">
                                         <div class="form-group">
                                           <label>Nama Atasan</label>
-                                          <select id="addName" type="" name="nip_atasan" class="form-select" placeholder="Sesuaikan SKP">
+                                          <select id="atasan_edit" type="" name="nip_atasan" class="form-select" placeholder="Sesuaikan SKP">
                                             <option selected>Pilih atasan wilayah kerja</option>
                                             @foreach($atasan as $item => $atasanRegion)
                                             <option value="{{ $atasanRegion->nip }}" {{ $employee->nip_atasan == $atasanRegion->nip ? 'selected' : '' }}>
@@ -274,6 +270,31 @@
             })
 </script>
 @endif
+
+<script>
+    $(document).ready(function() {
+        $('#wilayah_kerja,#wilayah_kerja_edit').on('change', function() {
+            var wilayah = $(this).val();
+            if (wilayah) {
+                $.ajax({
+                    url: '/admin/get-atasan/' + encodeURIComponent(wilayah),
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#atasan,#atasan_edit').empty();
+                        $('#atasan,#atasan_edit').append('<option value="">Pilih atasan wilayah kerja</option>');
+                        $.each(data, function(nip, nama) {
+                            $('#atasan,#atasan_edit').append('<option value="' + nip + '">' + nama + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $('#atasan,#atasan_edit').empty();
+                $('#atasan,#atasan_edit').append('<option value="">Pilih atasan wilayah kerja</option>');
+            }
+        });
+    });
+</script>
 
 
 <script>

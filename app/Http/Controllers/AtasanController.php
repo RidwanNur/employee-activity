@@ -313,6 +313,11 @@ class AtasanController extends Controller
 
     }
 
+    public function profile(){
+        $employees = Employees::where('nip', Auth::user()->nip)->first();
+        return view ('profile', compact('employees'));
+    }
+
 
     public function listRecap(Request $request){
         
