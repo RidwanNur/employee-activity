@@ -45,8 +45,8 @@ class AdminController extends Controller
         public function getAtasan($wilayah)
         {
             $atasan = Employees::where('region', $wilayah)
-                            ->whereNotNull('position') // Pastikan hanya mengambil yang punya jabatan
-                            ->pluck('name', 'id'); // Ambil nama dan ID
+                            ->whereNotNull('position') 
+                            ->pluck('name', 'nip'); 
 
             return response()->json($atasan);
         }
@@ -87,13 +87,14 @@ class AdminController extends Controller
         $user->assignRole('pegawai');
 
         $atasan = User::where('nip', $request->nip_atasan)->first();
-        if($atasan->hasRole('pegawai')){
+        if($atasan && $atasan->hasRole('pegawai')){
             $atasan->syncRoles(['atasan']);
             $atasan->update([
                 'is_atasan' => 1,
                 'updated_at' => Carbon::now(),
             ]);
         }
+        // return $atasan->getRoleNames();
        Employees::create([
             'user_id' => $user->id,
             'nip' => $request->nip,
